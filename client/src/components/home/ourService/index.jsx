@@ -1,6 +1,6 @@
 import "./styles.scss";
 import { Box, Typography, Button, Grid, Card, CardMedia } from "@mui/material";
-import banner_image from "../../../assets/homepage/Divwhat-photo-block.png";
+import banner_image from "@src/assets/homepage/Divwhat-photo-block.png";
 
 const services = [
   { label: "BUYING", image: banner_image },
