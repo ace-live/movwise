@@ -1,6 +1,6 @@
 import "./styles.scss";
 import { Box, Button, Typography, CardMedia } from "@mui/material";
-import banner_image from "../../../assets/homepage/home_Banner.png";
+import banner_image from "@src/assets/homepage/home_Banner.png";
 
 const labels = ["BUYING", "SELLING", "REMORTGAGE"];
 
