@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Roboto, sans-serif",
+    fontFamily: "Roboto,Big Caslon FB, sans-serif",
     button: {
       textTransform: "none",
       fontWeight: 500,
@@ -42,7 +42,14 @@ const theme = createTheme({
       verticalAlign: "middle",
     },
     caption: {},
-    subtitle1: {},
+    subtitle1: {
+      color: "#333333",
+      fontWeight: "400",
+      fontSize: "16.5px",
+      lineHeight: "23.57px",
+      letterSpacing: "0%",
+      textAlign: "right",
+    },
     subtitle2: {
       color: "#4A7C59",
       fontWeight: "300",
