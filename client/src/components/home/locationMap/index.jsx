@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import "./styles.scss";
-import banner_image from "../../../assets/homepage/map.png";
+import banner_image from "@src/assets/homepage/map.png";
 
 const LocationMap = () => {
   return (

@@ -1,5 +1,5 @@
 import { Box, Typography, Grid, Button, Card, CardContent } from "@mui/material";
-import background_image from "../../../assets/homepage/ourAdvantage-background.jpg";
+import background_image from "@src/assets/homepage/ourAdvantage-background.jpg";
 import "./styles.scss";
 
 const OurAdvantage = () => {
