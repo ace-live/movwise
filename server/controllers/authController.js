@@ -3,12 +3,12 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 exports.register = async (req, res) => {
-  const { name,email, phone, password, status, status_desc,is_buyer,is_seller,is_remortgage, is_guest } = req.body;
+  const { name,email, phone, password, status, status_desc,is_buyer,is_seller,is_remortgage, is_guest, is_otp_verified, is_subscribed } = req.body;
   try {
     const hashed = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      'INSERT INTO users (name, email, phone, password,status,status_desc,is_buyer,is_seller,is_remortgage, is_guest) VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9,$10) RETURNING user_id, email,name',
-      [name,email, phone,hashed, status,status_desc,is_buyer,is_seller,is_remortgage, is_guest]
+      'INSERT INTO users (name, email, phone, password,status,status_desc,is_buyer,is_seller,is_remortgage, is_guest, is_otp_verified, is_subscribed) VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING user_id, email,name',
+      [name,email, phone,hashed, status,status_desc,is_buyer,is_seller,is_remortgage, is_guest, is_otp_verified, is_subscribed]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
