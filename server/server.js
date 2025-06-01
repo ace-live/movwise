@@ -12,6 +12,7 @@ app.use(express.json()); // for parsing application/json
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/questions', require('./routes/questions'));
+app.use('/api/email', require('./routes/email'));
 
 // Just for testing API connection
 app.get('/api', (req, res) => {

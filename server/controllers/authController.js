@@ -66,3 +66,26 @@ exports.updateUserStatus = async (req, res) => {
   }
 }
 
+exports.verifyOtpStatus = async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM otp_store WHERE user_email = $1 AND otp_value = $2 AND status = $3',
+      [email, otp, false]
+    );
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid OTP' });
+    }
+    
+    // Update the OTP status to verified
+    await pool.query(
+      'UPDATE otp_store SET status = $3 WHERE user_email = $1 AND otp_value = $2',
+      [email, otp, true]
+    );
+    
+    res.json({ message: 'OTP verified successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
