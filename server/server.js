@@ -13,8 +13,9 @@ app.use(express.json()); // for parsing application/json
 app.use('/api/auth', require('./routes/auth'));
 app.use('/questions', require('./routes/questions'));
 app.use('/api/email', require('./routes/email'));
-app.use('/api/admin/', require('./routes/user'));
-app.use('/api/admin/', require('./routes/dispute'));
+app.use('/api/admin/user', require('./routes/user'));
+app.use('/api/admin/dispute', require('./routes/dispute'));
+app.use('/api/admin/conveyancer', require('./routes/conveyancer'));
 
 // Just for testing API connection
 app.get('/api', (req, res) => {
