@@ -1,6 +1,6 @@
 import axios from "axios";
-import { baseUrl } from "../../../constant";
-import { SessionExpiredLogout } from "../../../utilities";
+import { baseUrl } from "../../constant";
+// import { SessionExpiredLogout } from "../../../utilities";
 
 let isSessionExpired = false; // Flag to track session expiry
 
@@ -23,7 +23,7 @@ const ApiComponent = async ({ method, endpoint, payload = null, customHeaders = 
         if (response?.data?.detail === "Invalid or expired token") {
             if (!isSessionExpired) {
                 isSessionExpired = true;
-                SessionExpiredLogout();
+                // SessionExpiredLogout();
             }
             return;
         }

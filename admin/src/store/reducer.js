@@ -49,16 +49,46 @@ const userSlice = createSlice({
   },
 });
 
+//get user
+const conveyencerSlice = createSlice({
+  name: "conveyencerList",
+  initialState: {
+    data: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    getConveyencerStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getConveyencerSuccess: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+    getConveyencerFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+  },
+});
+
 // Export Actions
 export const { getLoginStart, getLoginSuccess, getLoginFailure } =
   authSlice.actions;
 export const { getUserStart, getUserSuccess, getUserFailure } =
   userSlice.actions;
+export const {
+  getConveyencerStart,
+  getConveyencerFailure,
+  getConveyencerSuccess,
+} = conveyencerSlice.actions;
 
 // Combine Reducers
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
   userData: userSlice.reducer,
+  conveyencerData: conveyencerSlice.reducer,
 });
 
 export default rootReducer;

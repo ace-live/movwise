@@ -9,6 +9,9 @@ import {
   getUserStart,
   getUserSuccess,
   getUserFailure,
+  getConveyencerStart,
+  getConveyencerFailure,
+  getConveyencerSuccess,
 } from "../store/reducer";
 
 // GET login
@@ -46,12 +49,27 @@ export const fetchUser = () => async (dispatch) => {
   dispatch(getUserStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: "/user",
+    endpoint: "/users",
   });
 
   if (response?.error) {
     dispatch(getUserFailure(response?.error)); // Dispatch failure action
   } else {
     dispatch(getUserSuccess(response?.data)); // Dispatch success action
+  }
+};
+
+// GET Conveyencer list
+export const fetchConveyencerList = () => async (dispatch) => {
+  dispatch(getConveyencerStart()); // Dispatch loading state
+  const response = await ApiComponent({
+    method: "GET",
+    endpoint: "/conveyancers?is_verified=false&name=Ravi",
+  });
+
+  if (response?.error) {
+    dispatch(getConveyencerFailure(response?.error)); // Dispatch failure action
+  } else {
+    dispatch(getConveyencerSuccess(response?.data)); // Dispatch success action
   }
 };

@@ -1,10 +1,11 @@
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
-import SignIn from "layouts/authentication/sign-in";
-import SignUp from "layouts/authentication/sign-up";
+// import SignIn from "layouts/authentication/sign-in";
+// import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import UserManagement from "pages/userManagement";
+import ConveyancerManagement from "pages/conveyancerManagement";
 
 const routes = [
   {
@@ -21,7 +22,15 @@ const routes = [
     key: "user-management",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/user-management",
-    component: <Tables />,
+    component: <UserManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Conveyancer Management",
+    key: "conveyancer-management",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/conveyancer-management",
+    component: <ConveyancerManagement />,
   },
   // {
   //   type: "collapse",
