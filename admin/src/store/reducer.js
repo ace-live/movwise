@@ -50,23 +50,47 @@ const userSlice = createSlice({
 });
 
 //get user
-const conveyencerSlice = createSlice({
-  name: "conveyencerList",
+const conveyancerSlice = createSlice({
+  name: "conveyancerList",
   initialState: {
     data: null,
     loading: false,
     error: null,
   },
   reducers: {
-    getConveyencerStart: (state) => {
+    getConveyancerStart: (state) => {
       state.loading = true;
       state.error = null;
     },
-    getConveyencerSuccess: (state, action) => {
+    getConveyancerSuccess: (state, action) => {
       state.loading = false;
-      state.user = action.payload;
+      state.data = action.payload;
     },
-    getConveyencerFailure: (state, action) => {
+    getConveyancerFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+  },
+});
+
+//status Update
+const statusUpdateSlice = createSlice({
+  name: "status",
+  initialState: {
+    data: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    getStatusUpdateStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getStatusUpdateSuccess: (state, action) => {
+      state.loading = false;
+      state.data = action.payload;
+    },
+    getStatusUpdateFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -79,16 +103,22 @@ export const { getLoginStart, getLoginSuccess, getLoginFailure } =
 export const { getUserStart, getUserSuccess, getUserFailure } =
   userSlice.actions;
 export const {
-  getConveyencerStart,
-  getConveyencerFailure,
-  getConveyencerSuccess,
-} = conveyencerSlice.actions;
+  getConveyancerStart,
+  getConveyancerFailure,
+  getConveyancerSuccess,
+} = conveyancerSlice.actions;
+export const {
+  getStatusUpdateStart,
+  getStatusUpdateSuccess,
+  getStatusUpdateFailure,
+} = statusUpdateSlice.actions;
 
 // Combine Reducers
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
   userData: userSlice.reducer,
-  conveyencerData: conveyencerSlice.reducer,
+  conveyancerData: conveyancerSlice.reducer,
+  statusUpdate: statusUpdateSlice.reducer,
 });
 
 export default rootReducer;

@@ -13,7 +13,6 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
 
 function Tables({ columns, rows, title }) {
-  debugger;
   return (
     <DashboardLayout>
       <DashboardNavbar />

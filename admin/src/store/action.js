@@ -9,9 +9,12 @@ import {
   getUserStart,
   getUserSuccess,
   getUserFailure,
-  getConveyencerStart,
-  getConveyencerFailure,
-  getConveyencerSuccess,
+  getConveyancerStart,
+  getConveyancerFailure,
+  getConveyancerSuccess,
+  getStatusUpdateFailure,
+  getStatusUpdateStart,
+  getStatusUpdateSuccess,
 } from "../store/reducer";
 
 // GET login
@@ -49,7 +52,7 @@ export const fetchUser = () => async (dispatch) => {
   dispatch(getUserStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: "/users",
+    endpoint: "/user",
   });
 
   if (response?.error) {
@@ -59,17 +62,37 @@ export const fetchUser = () => async (dispatch) => {
   }
 };
 
-// GET Conveyencer list
-export const fetchConveyencerList = () => async (dispatch) => {
-  dispatch(getConveyencerStart()); // Dispatch loading state
+// GET Conveyancer list
+export const fetchConveyancerList = () => async (dispatch) => {
+  dispatch(getConveyancerStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: "/conveyancers?is_verified=false&name=Ravi",
+    endpoint: "/conveyancer",
   });
 
   if (response?.error) {
-    dispatch(getConveyencerFailure(response?.error)); // Dispatch failure action
+    dispatch(getConveyancerFailure(response?.error)); // Dispatch failure action
   } else {
-    dispatch(getConveyencerSuccess(response?.data)); // Dispatch success action
+    dispatch(getConveyancerSuccess(response?.data)); // Dispatch success action
   }
 };
+
+// Status Update details
+export const fetchStatusUpdate =
+  (userId, currentStatus) => async (dispatch) => {
+    dispatch(getStatusUpdateStart()); // Dispatch loading state
+    const response = await ApiComponent({
+      method: "PATCH",
+      endpoint: `/users/${userId}/status`,
+      payload: {
+        status: !currentStatus,
+        status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
+      },
+    });
+
+    if (response?.error) {
+      dispatch(getStatusUpdateFailure(response?.error)); // Dispatch failure action
+    } else {
+      dispatch(getStatusUpdateSuccess(response?.data)); // Dispatch success action
+    }
+  };

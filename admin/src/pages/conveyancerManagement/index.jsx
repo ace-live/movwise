@@ -4,18 +4,16 @@ import MDTypography from "components/MDTypography";
 import MDBadge from "components/MDBadge";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchConveyencerList } from "../../store/action";
+import { fetchConveyancerList } from "../../store/action";
 import Tables from "layouts/tables";
 
 const ConveyancerManagement = () => {
   const dispatch = useDispatch();
-  const { userData, conveyencerData } = useSelector(
-    (state) => state.reducerData
-  );
+  const { conveyancerData } = useSelector((state) => state.reducerData);
 
   useEffect(() => {
-    if (!conveyencerData?.data) {
-      dispatch(fetchConveyencerList());
+    if (!conveyancerData?.data) {
+      dispatch(fetchConveyancerList());
     }
   }, []);
 
@@ -25,16 +23,16 @@ const ConveyancerManagement = () => {
     { Header: "name", accessor: "name", align: "left" },
     { Header: "email", accessor: "email", align: "left" },
     { Header: "phone", accessor: "phone", align: "left" },
-    { Header: "role", accessor: "role", align: "center" },
     { Header: "status", accessor: "status", align: "center" },
+    { Header: "Profile", accessor: "Profile", align: "center" },
     { Header: "action", accessor: "action", align: "center" },
   ];
 
   // Build rows dynamically
-  const rows = userData?.user?.map((user) => ({
+  const rows = conveyancerData?.data?.map((user) => ({
     id: (
       <MDTypography variant="gradient" size="sm">
-        {user.user_id}
+        {user.id}
       </MDTypography>
     ),
     name: (
@@ -52,7 +50,7 @@ const ConveyancerManagement = () => {
         {user.phone}
       </MDTypography>
     ),
-    role: (
+    Profile: (
       <MDTypography variant="gradient" size="sm">
         {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
       </MDTypography>
@@ -92,15 +90,15 @@ const ConveyancerManagement = () => {
       </MDTypography>
     ),
   }));
-  // Assuming you have some DataTable component that takes columns and rows as props:
+
   return (
     <>
-      {userData?.user?.length && (
+      {conveyancerData?.data?.length && (
         <Tables
           columns={columns ? columns : []}
           rows={rows ? rows : []}
-          title={"User List"}
-          user={userData?.user}
+          title={"Conveyancer List"}
+          user={conveyancerData?.data}
         />
       )}
     </>

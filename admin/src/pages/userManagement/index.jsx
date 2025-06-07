@@ -152,51 +152,24 @@
 import React, { useEffect } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
 import MDBadge from "components/MDBadge";
-
-import team2 from "assets/images/team-2.jpg";
-import team3 from "assets/images/team-3.jpg";
-
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../../store/action";
+import { fetchStatusUpdate, fetchUser } from "../../store/action";
 import Tables from "layouts/tables";
-
-const Author = ({ image, name, email }) => (
-  <MDBox display="flex" alignItems="center" lineHeight={1}>
-    <MDAvatar src={image} name={name} size="sm" />
-    <MDBox ml={2} lineHeight={1}>
-      <MDTypography display="block" variant="button" fontWeight="medium">
-        {name}
-      </MDTypography>
-      <MDTypography variant="caption">{email}</MDTypography>
-    </MDBox>
-  </MDBox>
-);
-
-const Job = ({ title, description }) => (
-  <MDBox lineHeight={1} textAlign="left">
-    <MDTypography
-      display="block"
-      variant="caption"
-      color="text"
-      fontWeight="medium"
-    >
-      {title}
-    </MDTypography>
-    <MDTypography variant="caption">{description}</MDTypography>
-  </MDBox>
-);
+import Switch from "@mui/material/Switch";
 
 const UserManagement = () => {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.reducerData);
-
   useEffect(() => {
     if (!userData?.user) {
       dispatch(fetchUser());
     }
   }, []);
+
+  const handleStatusToggle = (userId, currentStatus) => {
+    dispatch(fetchStatusUpdate(userId, currentStatus));
+  };
 
   // Prepare columns and rows data for the table
   const columns = [
@@ -246,6 +219,10 @@ const UserManagement = () => {
           variant="gradient"
           size="sm"
         />
+        <Switch
+          checked={user.status}
+          onChange={() => handleStatusToggle(user.user_id, user.status)}
+        />
       </MDBox>
     ),
     employed: (
@@ -279,7 +256,6 @@ const UserManagement = () => {
           columns={columns ? columns : []}
           rows={rows ? rows : []}
           title={"User List"}
-          user={userData?.user}
         />
       )}
     </>
