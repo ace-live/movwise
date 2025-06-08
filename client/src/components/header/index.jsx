@@ -15,20 +15,27 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import "./styles.scss";
 
 const drawerWidth = 240;
 const navItems = ["Home", "About", "Services"];
 
+
 const Header = (props) => {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();  
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
+  };
+
+  const navigateLogin = () => {
+    navigate("/login");
   };
 
   const drawer = (
@@ -73,7 +80,7 @@ const Header = (props) => {
               </Button>
             ))}
 
-            <Button variant="contained" color="secondary" className="login">
+            <Button variant="contained" color="secondary" className="login" onClick={navigateLogin}>
               Login
             </Button>
           </Box>
