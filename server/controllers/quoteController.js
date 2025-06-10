@@ -47,7 +47,7 @@ exports.getQuoteDetails = async (req, res) => {
         }
         const row = result.rows[0];
         row.response = JSON.parse(row.response);
-        res.status(200).json({ row });
+        res.status(200).json({ quote_details: row });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
