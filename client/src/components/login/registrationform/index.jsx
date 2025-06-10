@@ -2,7 +2,8 @@ import {
   Box, Typography, TextField, Button, Snackbar, Alert,
 } from '@mui/material';
 import { useState } from 'react';
-import { registerUser } from '@api/auth';
+import { registerUser, loginUser } from '@api/auth';
+import { AuthContext } from '@api/authContext';
 
 const registrationform = () => {
 
@@ -13,7 +14,7 @@ const registrationform = () => {
     password: '',
     confirmPassword: '',
   });
-
+  const { login } = useContext(AuthContext);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,7 +34,7 @@ const registrationform = () => {
         email: form.email,
         phone: form.phone,
         password: form.password,
-        status: 'active',
+        status: true,
         status_desc: 'New User',
         is_buyer: true,
         is_seller: false,
@@ -41,11 +42,28 @@ const registrationform = () => {
         is_guest: false,
       };
 
-      await registerUser(payload);
-      setSuccess(true);
-    } catch (err) {
-      setError(err.error || 'Something went wrong!');
+          // Step 1: Register user
+      const registrationResponse = await registerUser(payload);
+      console.log('Registration Response:', registrationResponse);
+      // Step 2: Auto-login with registered credentials
+      if (registrationResponse && registrationResponse.email) {
+        const loginResponse = await loginUser({
+        email: registrationResponse.email,
+        password: form.password, // Use the password from the form
+      });
+      if (loginResponse.status === 200) {
+        login(loginResponse.data.token);
+        setSuccess(true);
+      }  
+      }
+          
+    } catch (err) {    
+    if (err.error?.includes('Email already exists')) {
+      setError('This email is already registered.');
+    } else {
+      setError(err.error || 'Registration failed. Please try again.');
     }
+  }
   };
 
   return (
@@ -81,6 +99,23 @@ const registrationform = () => {
         variant="filled"
         onChange={handleChange}
         name="email"
+        margin="normal"
+        sx={{ backgroundColor: '#444', input: { color: 'white' }, label: { color: 'white' } ,'&:focus-within': {
+      borderLeft: '2px solid #F4C430', // Background on hover
+    }, 
+    '& label.Mui-focused': {
+      color: 'white', // Label color when focused
+    },
+  }}
+      />
+
+      <TextField 
+        fullWidth
+        label="Your Phone"
+        type="phone"        
+        variant="filled"
+        onChange={handleChange}
+        name="phone"
         margin="normal"
         sx={{ backgroundColor: '#444', input: { color: 'white' }, label: { color: 'white' } ,'&:focus-within': {
       borderLeft: '2px solid #F4C430', // Background on hover

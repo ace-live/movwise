@@ -1,10 +1,13 @@
 import {
   Box, Typography, TextField, Button, Checkbox, FormControlLabel, Link, Snackbar, Alert,  
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { loginUser } from '@api/auth';
+import { AuthProvider } from "@api/authContext";
+import { AuthContext } from '@api/authContext'; // Ensure this path is correct
 
 const LoginForm = () => {
+  const { login } = useContext(AuthContext);
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -31,11 +34,13 @@ const LoginForm = () => {
 
     try {
       const response = await loginUser(form);
+      console.log(response);
       if (response.status === 200) {
+        login(response.data.token);
         setSuccess(true);
       }
     } catch (err) {
-      setError(err.error || 'Something went wrong!');
+      setError(err.response?.data?.error || "Login failed");
     }
   };
 
