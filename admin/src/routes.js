@@ -6,6 +6,7 @@ import Dashboard from "layouts/dashboard";
 import Icon from "@mui/material/Icon";
 import UserManagement from "pages/userManagement";
 import ConveyancerManagement from "pages/conveyancerManagement";
+import AddEditUser from "./pages/userManagement/addEditUser/addEditUser";
 
 const routes = [
   {
@@ -23,6 +24,12 @@ const routes = [
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/user-management",
     component: <UserManagement />,
+  },
+  {
+    type: "route",
+    key: "edit-user",
+    route: "/user-management/edit/:id", // dynamic user ID
+    component: <AddEditUser />, // or reuse AddUser with logic
   },
   {
     type: "collapse",

@@ -1,11 +1,15 @@
 import React, { useEffect } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDBadge from "components/MDBadge";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchConveyancerList } from "../../store/action";
+import {
+  fetchConveyancerList,
+  fetchConveyancerApproval,
+  fetchConveyancerDeactivate,
+} from "../../store/action";
 import Tables from "layouts/tables";
+import Switch from "@mui/material/Switch";
 
 const ConveyancerManagement = () => {
   const dispatch = useDispatch();
@@ -17,6 +21,14 @@ const ConveyancerManagement = () => {
     }
   }, []);
 
+  const handleStatusToggle = (userId, currentStatus) => {
+    if (currentStatus) {
+      dispatch(fetchConveyancerDeactivate(userId, currentStatus));
+    } else {
+      dispatch(fetchConveyancerApproval(userId, currentStatus));
+    }
+  };
+
   // Prepare columns and rows data for the table
   const columns = [
     { Header: "id", accessor: "id", align: "left" },
@@ -24,7 +36,7 @@ const ConveyancerManagement = () => {
     { Header: "email", accessor: "email", align: "left" },
     { Header: "phone", accessor: "phone", align: "left" },
     { Header: "status", accessor: "status", align: "center" },
-    { Header: "Profile", accessor: "Profile", align: "center" },
+    // { Header: "Profile", accessor: "Profile", align: "center" },
     { Header: "action", accessor: "action", align: "center" },
   ];
 
@@ -50,20 +62,16 @@ const ConveyancerManagement = () => {
         {user.phone}
       </MDTypography>
     ),
-    Profile: (
-      <MDTypography variant="gradient" size="sm">
-        {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
-      </MDTypography>
-    ),
+    // Profile: (
+    //   <MDTypography variant="gradient" size="sm">
+    //     {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
+    //   </MDTypography>
+    // ),
     status: (
       <MDBox ml={-1}>
-        <MDBadge
-          badgeContent={
-            user.status_desc || (user.status ? "Active" : "Inactive")
-          }
-          color={user.status ? "success" : "dark"}
-          variant="gradient"
-          size="sm"
+        <Switch
+          checked={user.is_verified}
+          onChange={() => handleStatusToggle(user.id, user.is_verified)}
         />
       </MDBox>
     ),
