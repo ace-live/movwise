@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 // Get all users with pagination and optional filter
 exports.getUsers = async (req, res) => {
   try {
-    let { page, limit, filter } = req.body;
+    let { page, limit, filter } = req.query;
 
     page = parseInt(page);
     limit = parseInt(limit);

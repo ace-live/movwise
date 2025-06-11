@@ -3,29 +3,57 @@ const pool = require('../../config/db');
 // Get all conveyancers with optional filters
 exports.getConveyancers = async (req, res) => {
   try {
-    const { is_verified, name, email } = req.query;
+    let { is_verified, name, email, filter, page, limit } = req.query;
     let query = 'SELECT * FROM conveyancers WHERE 1=1';
     let queryParams = [];
 
+    // Build dynamic WHERE conditions safely
     if (is_verified !== undefined) {
-      query += ` AND is_verified = $${queryParams.length + 1}`;
       queryParams.push(is_verified === 'true');
+      query += ` AND is_verified = $${queryParams.length}`;
     }
 
     if (name) {
-      query += ` AND LOWER(name) LIKE $${queryParams.length + 1}`;
       queryParams.push(`%${name.toLowerCase()}%`);
+      query += ` AND LOWER(name) LIKE $${queryParams.length}`;
     }
 
     if (email) {
-      query += ` AND LOWER(email) LIKE $${queryParams.length + 1}`;
       queryParams.push(`%${email.toLowerCase()}%`);
+      query += ` AND LOWER(email) LIKE $${queryParams.length}`;
     }
 
-    query += ' ORDER BY created_at DESC';
+    // Handle pagination
+    page = parseInt(page);
+    limit = parseInt(limit);
+    page = isNaN(page) || page < 1 ? 1 : page;
+    limit = isNaN(limit) || limit < 1 ? 10 : limit;
 
-    const result = await pool.query(query, queryParams);
-    res.status(200).json(result.rows);
+    const offset = (page - 1) * limit;
+
+    let result;
+    if (!filter || filter.trim() === '') {
+      // No filter applied, just pagination
+      query += ' ORDER BY created_at DESC LIMIT $' + (queryParams.length + 1) + ' OFFSET $' + (queryParams.length + 2);
+      queryParams.push(limit, offset);
+      result = await pool.query(query, queryParams);
+
+    }else {
+      // Filter applied
+      query += ` AND (LOWER(name) LIKE $${queryParams.length + 1} OR LOWER(email) LIKE $${queryParams.length + 1})`;
+      queryParams.push(`%${filter.toLowerCase()}%`);
+      query += ' ORDER BY created_at DESC LIMIT $' + (queryParams.length + 1) + ' OFFSET $' + (queryParams.length + 2);
+      queryParams.push(limit, offset);
+      result = await pool.query(query, queryParams);
+    }
+
+    return res.status(200).json({
+      page,
+      limit,
+      offset,
+      filter: filter || null,
+      conveyancer: result.rows
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
