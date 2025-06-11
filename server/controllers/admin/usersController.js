@@ -1,16 +1,45 @@
 const pool = require('../../config/db');
 const bcrypt = require('bcryptjs');
 
-
-// Get all users
+// Get all users with pagination and optional filter
 exports.getUsers = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
-    res.status(200).json(result.rows);
+    let { page, limit, filter } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+    page = isNaN(page) || page < 1 ? 1 : page;
+    limit = isNaN(limit) || limit < 1 ? 10 : limit;
+
+    const offset = (page - 1) * limit;
+
+    let result;
+    if (!filter || filter.trim() === '') {
+      // No filter applied
+      result = await pool.query(
+        'SELECT * FROM users ORDER BY user_id LIMIT $1 OFFSET $2',
+        [limit, offset]
+      );
+    } else {
+      // Filter applied
+      result = await pool.query(
+        'SELECT * FROM users WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1 ORDER BY user_id LIMIT $2 OFFSET $3',
+        [`%${filter}%`, limit, offset]
+      );
+    }
+    return res.status(200).json({
+      page,
+      limit,
+      offset,
+      filter: filter || null,
+      users: result.rows
+    });
   } catch (err) {
+    console.error('Error in getUsers:', err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Get a specific user by ID
 exports.getUserById = async (req, res) => {
@@ -29,7 +58,7 @@ exports.getUserById = async (req, res) => {
 // Create a new user
 exports.createUser = async (req, res) => {
   const { name, email, phone, password, status, status_desc, is_buyer, is_seller, is_remortgage, is_guest, is_otp_verified, is_subscribed } = req.body;
-  
+
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
@@ -46,7 +75,7 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone, password, status, status_desc, is_buyer, is_seller, is_remortgage, is_guest, is_otp_verified, is_subscribed } = req.body;
-  
+
   try {
     const existingUserResult = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
     if (existingUserResult.rows.length === 0) {
@@ -54,7 +83,7 @@ exports.updateUser = async (req, res) => {
     }
 
     const hashedPassword = password ? await bcrypt.hash(password, 10) : existingUserResult.rows[0].password;
-    
+
     const updateResult = await pool.query(
       'UPDATE users SET name = $1, email = $2, phone = $3, password = $4, status = $5, status_desc = $6, is_buyer = $7, is_seller = $8, is_remortgage = $9, is_guest = $10, is_otp_verified = $11, is_subscribed = $12 WHERE user_id = $13 RETURNING user_id, name, email',
       [name, email, phone, hashedPassword, status, status_desc, is_buyer, is_seller, is_remortgage, is_guest, is_otp_verified, is_subscribed, id]
@@ -85,7 +114,7 @@ exports.deleteUser = async (req, res) => {
 exports.alterUserStatus = async (req, res) => {
   const { id } = req.params;
   const { status, status_desc } = req.body;
-  
+
   try {
     const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
     if (result.rows.length === 0) {
@@ -103,7 +132,7 @@ exports.alterUserStatus = async (req, res) => {
 exports.updateUserRoles = async (req, res) => {
   const { id } = req.params;
   const { is_buyer, is_seller, is_remortgage, is_guest } = req.body;
-  
+
   try {
     const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
     if (result.rows.length === 0) {

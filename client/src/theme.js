@@ -2,10 +2,28 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Roboto, sans-serif",
+    fontFamily: "Roboto,Big Caslon FB, sans-serif",
     button: {
-      textTransform: "none", // Optional: prevents all caps
+      textTransform: "none",
       fontWeight: 500,
+    },
+    h1: {
+      fontWeight: "700",
+      fontSize: "28px",
+      lineHeight: "34.29px",
+      letterSpacing: "0%",
+      textAlign: "center",
+      verticalAlign: "middle",
+      color: "#4A7C59",
+    },
+    h2: {
+      fontWeight: "400",
+      fontSize: "20px",
+      lineHeight: "34.29px",
+      letterSpacing: "0%",
+      textAlign: "center",
+      verticalAlign: "middle",
+      color: "#000000",
     },
     body1: {
       fontWeight: "300",
@@ -13,7 +31,7 @@ const theme = createTheme({
       lineHeight: "28px",
       letterSpacing: "0.25px",
       verticalAlign: "middle",
-      color: "#414042"
+      color: "#414042",
     },
     body2: {
       color: "#414042",
@@ -23,11 +41,14 @@ const theme = createTheme({
       letterSpacing: "0.25px",
       verticalAlign: "middle",
     },
-    caption: {
-
-    },
+    caption: {},
     subtitle1: {
-
+      color: "#333333",
+      fontWeight: "400",
+      fontSize: "16.5px",
+      lineHeight: "23.57px",
+      letterSpacing: "0%",
+      textAlign: "right",
     },
     subtitle2: {
       color: "#4A7C59",
@@ -78,7 +99,7 @@ const theme = createTheme({
           "&:hover": {
             backgroundColor: "unset",
             boxShadow: "none",
-            color: "#4A7C59"
+            color: "#4A7C59",
           },
         },
         containedPrimary: {
@@ -93,7 +114,7 @@ const theme = createTheme({
           "&:hover": {
             backgroundColor: "#4A7C59",
             boxShadow: "none",
-            color: "#FFFFFF"
+            color: "#FFFFFF",
           },
         },
         containedSecondary: {
@@ -105,7 +126,7 @@ const theme = createTheme({
           fontSize: "14px",
           "&:hover": {
             backgroundColor: "#e6b327",
-            boxShadow: "none"
+            boxShadow: "none",
           },
         },
       },

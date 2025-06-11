@@ -1,0 +1,13 @@
+.property-details-form {
+  .input-container {
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    align-items: center;
+    gap: 32px;
+    .MuiTypography-root {
+      max-width: 230px;
+      width: 100%;
+    }
+  }
+}
