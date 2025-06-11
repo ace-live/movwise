@@ -1,27 +1,38 @@
 .our-services {
-    align-items: center !important;
+  align-items: center !important;
 
-    .card {
-        .MuiGrid-root {
-            .MuiPaper-root {
-                border-radius: 8px;
-                box-shadow: none;
+  .card {
+    .MuiGrid-root {
+      .MuiPaper-root {
+        border-radius: 8px;
+        box-shadow: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-                .MuiBox-root {
-                    justify-content: flex-start;
-                    border-radius: 8px 0 0 8px;
-                    padding-right: 24px;
-                    padding-top: 32px;
-                    font-weight: 400;
-                    letter-spacing: 2px;
-                }
-
-                img {
-                    margin-left: -14px;
-                    border-radius: 8px
-                }
-            }
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
         }
-    }
 
+        .MuiBox-root {
+          justify-content: flex-start;
+          border-radius: 8px 0 0 8px;
+          padding-right: 24px;
+          padding-top: 32px;
+          font-weight: 400;
+          letter-spacing: 2px;
+        }
+
+        img {
+          margin-left: -14px;
+          border-radius: 8px;
+          transition: transform 0.3s ease;
+
+          // Optional image scale effect
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
+  }
 }
