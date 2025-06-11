@@ -1,12 +1,12 @@
 import {
   Box, Typography, TextField, Button, Snackbar, Alert,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { registerUser, loginUser } from '@api/auth';
 import { AuthContext } from '@api/authContext';
 
 const registrationform = () => {
-
+  
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -34,12 +34,12 @@ const registrationform = () => {
         email: form.email,
         phone: form.phone,
         password: form.password,
-        status: true,
-        status_desc: 'New User',
-        is_buyer: true,
-        is_seller: false,
-        is_remortgage: false,
-        is_guest: false,
+        status: 1,
+        status_desc: 'Activated',
+        is_buyer: 0,
+        is_seller: 1,
+        is_remortgage: 0,
+        is_guest: 0,
       };
 
           // Step 1: Register user
