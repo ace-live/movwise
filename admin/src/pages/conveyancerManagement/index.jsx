@@ -1,0 +1,116 @@
+import React, { useEffect } from "react";
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchConveyancerList,
+  fetchConveyancerApproval,
+  fetchConveyancerDeactivate,
+} from "../../store/action";
+import Tables from "layouts/tables";
+import Switch from "@mui/material/Switch";
+
+const ConveyancerManagement = () => {
+  const dispatch = useDispatch();
+  const { conveyancerData } = useSelector((state) => state.reducerData);
+
+  useEffect(() => {
+    if (!conveyancerData?.data) {
+      dispatch(fetchConveyancerList());
+    }
+  }, []);
+
+  const handleStatusToggle = (userId, currentStatus) => {
+    if (currentStatus) {
+      dispatch(fetchConveyancerDeactivate(userId, currentStatus));
+    } else {
+      dispatch(fetchConveyancerApproval(userId, currentStatus));
+    }
+  };
+
+  // Prepare columns and rows data for the table
+  const columns = [
+    { Header: "id", accessor: "id", align: "left" },
+    { Header: "name", accessor: "name", align: "left" },
+    { Header: "email", accessor: "email", align: "left" },
+    { Header: "phone", accessor: "phone", align: "left" },
+    { Header: "status", accessor: "status", align: "center" },
+    // { Header: "Profile", accessor: "Profile", align: "center" },
+    { Header: "action", accessor: "action", align: "center" },
+  ];
+
+  // Build rows dynamically
+  const rows = conveyancerData?.data?.map((user) => ({
+    id: (
+      <MDTypography variant="gradient" size="sm">
+        {user.id}
+      </MDTypography>
+    ),
+    name: (
+      <MDTypography variant="gradient" size="sm">
+        {user.name}
+      </MDTypography>
+    ),
+    email: (
+      <MDTypography variant="gradient" size="sm">
+        {user.email}
+      </MDTypography>
+    ),
+    phone: (
+      <MDTypography variant="gradient" size="sm">
+        {user.phone}
+      </MDTypography>
+    ),
+    // Profile: (
+    //   <MDTypography variant="gradient" size="sm">
+    //     {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
+    //   </MDTypography>
+    // ),
+    status: (
+      <MDBox ml={-1}>
+        <Switch
+          checked={user.is_verified}
+          onChange={() => handleStatusToggle(user.id, user.is_verified)}
+        />
+      </MDBox>
+    ),
+    employed: (
+      <MDTypography
+        component="a"
+        href="#"
+        variant="caption"
+        color="text"
+        fontWeight="medium"
+      >
+        {new Date(user.created_at).toLocaleDateString("en-GB")}
+      </MDTypography>
+    ),
+    action: (
+      <MDTypography
+        component="a"
+        href="#"
+        variant="caption"
+        color="text"
+        fontWeight="medium"
+      >
+        Edit
+      </MDTypography>
+    ),
+  }));
+
+  return (
+    <>
+      {conveyancerData?.data?.length && (
+        <Tables
+          columns={columns ? columns : []}
+          rows={rows ? rows : []}
+          title={"Conveyancer List"}
+          user={conveyancerData?.data}
+        />
+      )}
+    </>
+  );
+};
+
+export default ConveyancerManagement;
