@@ -45,19 +45,19 @@ exports.createUser = async (req, res) => {
 // Update user details
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, password, status, status_desc, is_buyer, is_seller, is_remortgage, is_guest, is_otp_verified, is_subscribed } = req.body;
+  const { email, phone, status, status_desc } = req.body;
   
   try {
-    const existingUserResult = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
-    if (existingUserResult.rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    // const existingUserResult = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
+    // if (existingUserResult.rows.length === 0) {
+    //   return res.status(404).json({ error: 'User not found' });
+    // }
 
-    const hashedPassword = password ? await bcrypt.hash(password, 10) : existingUserResult.rows[0].password;
+    // const hashedPassword = password ? await bcrypt.hash(password, 10) : existingUserResult.rows[0].password;
     
     const updateResult = await pool.query(
-      'UPDATE users SET name = $1, email = $2, phone = $3, password = $4, status = $5, status_desc = $6, is_buyer = $7, is_seller = $8, is_remortgage = $9, is_guest = $10, is_otp_verified = $11, is_subscribed = $12 WHERE user_id = $13 RETURNING user_id, name, email',
-      [name, email, phone, hashedPassword, status, status_desc, is_buyer, is_seller, is_remortgage, is_guest, is_otp_verified, is_subscribed, id]
+      'UPDATE users SET email = $1, phone = $2, status = $3, status_desc = $4 WHERE user_id = $5 RETURNING user_id, name, email',
+      [email, phone, status, status_desc, id]
     );
     res.status(200).json(updateResult.rows[0]);
   } catch (err) {

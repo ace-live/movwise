@@ -100,3 +100,26 @@ exports.softDeleteConveyancer = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.alterConveyancerStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status, status_desc } = req.body;
+  
+  try {
+    const result = await pool.query(
+      'UPDATE users SET status = $1, status_desc = $2 WHERE user_id = $3 RETURNING user_id, status, status_desc',
+      [status, status_desc, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: `User status updated to ${status ? 'active' : 'inactive'}`,
+      user: result.rows[0] 
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
