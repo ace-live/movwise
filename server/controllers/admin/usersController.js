@@ -12,25 +12,35 @@ exports.getUsers = async (req, res) => {
     limit = isNaN(limit) || limit < 1 ? 10 : limit;
 
     const offset = (page - 1) * limit;
+    let result, countResult;
+    let totalRecords, totalPages;
 
-    let result;
     if (!filter || filter.trim() === '') {
+      countResult = await pool.query('SELECT COUNT(*) FROM users');
       // No filter applied
       result = await pool.query(
         'SELECT * FROM users ORDER BY user_id LIMIT $1 OFFSET $2',
         [limit, offset]
       );
     } else {
+      countResult = await pool.query(
+        'SELECT COUNT(*) FROM users WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1',
+        [`%${filter}%`]
+      );
       // Filter applied
       result = await pool.query(
         'SELECT * FROM users WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1 ORDER BY user_id LIMIT $2 OFFSET $3',
         [`%${filter}%`, limit, offset]
       );
     }
+    totalRecords = parseInt(countResult.rows[0].count);
+    totalPages = Math.ceil(totalRecords / limit);
     return res.status(200).json({
       page,
       limit,
       offset,
+      totalRecords,
+      totalPages,
       filter: filter || null,
       users: result.rows
     });

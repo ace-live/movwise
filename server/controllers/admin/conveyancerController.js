@@ -31,14 +31,20 @@ exports.getConveyancers = async (req, res) => {
 
     const offset = (page - 1) * limit;
 
-    let result;
+    let result, countResult;
+    let totalRecords, totalPages;
     if (!filter || filter.trim() === '') {
+      countResult = await pool.query('SELECT COUNT(*) FROM conveyancers');
       // No filter applied, just pagination
       query += ' ORDER BY created_at DESC LIMIT $' + (queryParams.length + 1) + ' OFFSET $' + (queryParams.length + 2);
       queryParams.push(limit, offset);
       result = await pool.query(query, queryParams);
 
-    }else {
+    } else {
+      countResult = await pool.query(
+        'SELECT COUNT(*) FROM conveyancers WHERE LOWER(name) LIKE $1 OR LOWER(email) LIKE $1',
+        [`%${filter.toLowerCase()}%`]
+      );
       // Filter applied
       query += ` AND (LOWER(name) LIKE $${queryParams.length + 1} OR LOWER(email) LIKE $${queryParams.length + 1})`;
       queryParams.push(`%${filter.toLowerCase()}%`);
@@ -46,11 +52,14 @@ exports.getConveyancers = async (req, res) => {
       queryParams.push(limit, offset);
       result = await pool.query(query, queryParams);
     }
-
+    totalRecords = parseInt(countResult.rows[0].count);
+    totalPages = Math.ceil(totalRecords / limit);
     return res.status(200).json({
       page,
       limit,
       offset,
+      totalRecords,
+      totalPages,
       filter: filter || null,
       conveyancer: result.rows
     });
