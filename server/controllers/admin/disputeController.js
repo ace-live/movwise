@@ -3,7 +3,7 @@ const pool = require('../../config/db');
 // Get all disputes
 exports.getDisputes = async (req, res) => {
   try {
-    const { status, requester_id, conveyancer_id, property_ref_id } = req.query;  // Optional filters
+    let { status, requester_id, conveyancer_id, property_ref_id, page, limit } = req.query;  // Optional filters
     let query = 'SELECT * FROM disputes WHERE 1=1';
     let queryParams = [];
 
@@ -23,9 +23,30 @@ exports.getDisputes = async (req, res) => {
       query += ' AND property_ref_id = $' + (queryParams.length + 1);
       queryParams.push(property_ref_id);
     }
+    page = parseInt(page);
+    limit = parseInt(limit);
+    page = isNaN(page) || page < 1 ? 1 : page;
+    limit = isNaN(limit) || limit < 1 ? 10 : limit;
 
-    const result = await pool.query(query, queryParams);
-    res.status(200).json(result.rows);
+    const offset = (page - 1) * limit;
+
+    let result, countResult;
+    let totalRecords, totalPages;
+    countResult = await pool.query('SELECT COUNT(*) FROM disputes');
+    // No filter applied, just pagination
+    query += ' ORDER BY created_at DESC LIMIT $' + (queryParams.length + 1) + ' OFFSET $' + (queryParams.length + 2);
+    queryParams.push(limit, offset);
+    totalRecords = parseInt(countResult.rows[0].count);
+    totalPages = Math.ceil(totalRecords / limit);
+    result = await pool.query(query, queryParams);
+    return res.status(200).json({
+      page,
+      limit,
+      offset,
+      totalRecords,
+      totalPages,
+      disputes: result.rows
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
