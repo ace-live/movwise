@@ -7,5 +7,6 @@ router.get('/', conveyancerController.getConveyancers);
 router.get('/:id', conveyancerController.getConveyancerById);
 router.patch('/:id/approve', conveyancerController.approveConveyancer);
 router.patch('/:id/soft-delete', conveyancerController.softDeleteConveyancer);
+router.patch('/:id/status', conveyancerController.alterConveyancerStatus);
 
 module.exports = router;
