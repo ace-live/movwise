@@ -16,7 +16,7 @@ const ConveyancerManagement = () => {
   const { conveyancerData } = useSelector((state) => state.reducerData);
 
   useEffect(() => {
-    if (!conveyancerData?.data) {
+    if (!conveyancerData?.data?.conveyancer) {
       dispatch(fetchConveyancerList());
     }
   }, []);
@@ -41,7 +41,7 @@ const ConveyancerManagement = () => {
   ];
 
   // Build rows dynamically
-  const rows = conveyancerData?.data?.map((user) => ({
+  const rows = conveyancerData?.data?.conveyancer?.map((user) => ({
     id: (
       <MDTypography variant="gradient" size="sm">
         {user.id}
@@ -101,12 +101,12 @@ const ConveyancerManagement = () => {
 
   return (
     <>
-      {conveyancerData?.data?.length && (
+      {conveyancerData?.data?.conveyancer?.length && (
         <Tables
           columns={columns ? columns : []}
           rows={rows ? rows : []}
           title={"Conveyancer List"}
-          user={conveyancerData?.data}
+          user={conveyancerData?.data?.conveyancer}
         />
       )}
     </>

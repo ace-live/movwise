@@ -40,7 +40,12 @@ function Tables({ columns, rows, title }) {
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
-                  noEndBorder
+                  canSearch={true}
+                  noEndBorder={true}
+                  pagination={{
+                    color: "info",
+                    defaultRowsPerPage: 20,
+                  }}
                 />
               </MDBox>
             </Card>

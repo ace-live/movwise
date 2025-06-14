@@ -12,7 +12,7 @@ const UserManagement = () => {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.reducerData);
   useEffect(() => {
-    if (!userData?.user) {
+    if (!userData?.user?.users) {
       dispatch(fetchUser());
     }
   }, []);
@@ -33,7 +33,13 @@ const UserManagement = () => {
   ];
 
   // Build rows dynamically
-  const rows = userData?.user?.map((user) => ({
+   const mockRows =
+    userData?.user?.users[0] &&
+    Array.from({ length: 100 }, (_, i) => ({
+      ...userData?.user?.users[0],
+      user_id: i + 1,
+    }));
+  const rows = mockRows?.map((user) => ({
     id: (
       <MDTypography variant="gradient" size="sm">
         {user.user_id}
@@ -91,7 +97,7 @@ const UserManagement = () => {
   // Assuming you have some DataTable component that takes columns and rows as props:
   return (
     <>
-      {userData?.user?.length && (
+      {userData?.user?.users?.length && (
         <Tables
           columns={columns ? columns : []}
           rows={rows ? rows : []}

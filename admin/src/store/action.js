@@ -62,7 +62,7 @@ export const fetchUser = () => async (dispatch) => {
   dispatch(getUserStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: "/user",
+    endpoint: `/user?limit=10`,
   });
 
   if (response?.error) {
@@ -70,6 +70,7 @@ export const fetchUser = () => async (dispatch) => {
   } else {
     dispatch(getUserSuccess(response?.data)); // Dispatch success action
   }
+  return response;
 };
 
 // edit user details
@@ -77,7 +78,7 @@ export const fetchEditUserDetails = (values) => async (dispatch) => {
   dispatch(getEditUserDetailsStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "PUT",
-    endpoint: `/users/${values?.id}`,
+    endpoint: `/user/${values?.id}`,
     payload: {
       name: values?.name,
       email: values?.email,
@@ -103,7 +104,7 @@ export const fetchStatusUpdate =
       endpoint: `/user/${userId}/status`,
       payload: {
         status: !currentStatus,
-        status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
+        status_desc: currentStatus ? "System Inactive" : "System Active", // Toggle status description
       },
     });
 
