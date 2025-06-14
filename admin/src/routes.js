@@ -7,6 +7,8 @@ import Icon from "@mui/material/Icon";
 import UserManagement from "pages/userManagement";
 import ConveyancerManagement from "pages/conveyancerManagement";
 import AddEditUser from "./pages/userManagement/addEditUser/addEditUser";
+import DisputeDashboard from "./pages/disputeManagement/disputeDashboard";
+import DisputeDetail from "./pages/disputeManagement/disputeDetails";
 
 const routes = [
   {
@@ -39,6 +41,21 @@ const routes = [
     route: "/conveyancer-management",
     component: <ConveyancerManagement />,
   },
+  {
+    type: "collapse",
+    name: "Dispute Management",
+    key: "dispute-management",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/dispute-management",
+    component: <DisputeDashboard />,
+  },
+  {
+    type: "route",
+    key: "dispute-detail",  
+    route: "/dispute-management/:disputeId", // dynamic dispute ID
+    component: <DisputeDetail />,
+  },
+
   // {
   //   type: "collapse",
   //   name: "Sign In",

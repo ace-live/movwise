@@ -49,7 +49,7 @@ const LoginForm = () => {
       <Typography variant="h4" color="white" gutterBottom>
         Good Day !
       </Typography>
-      <Typography variant="subtitle1" color="white" mb={3}>
+      <Typography variant="" color="white" mb={3}>
         Thank you for coming back!
       </Typography>
 

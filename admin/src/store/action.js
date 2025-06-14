@@ -25,6 +25,25 @@ import {
   getConveyancerDeactivateStart,
   getConveyancerDeactivateSuccess,
   getConveyancerDeactivateFailure,
+   // Disputes List
+  getDisputesStart,
+  getDisputesSuccess,
+  getDisputesFailure,
+  setDisputesFilters,
+  deleteDisputeSuccess,
+  
+  // Single Dispute
+  getDisputeStart,
+  getDisputeSuccess,
+  getDisputeFailure,
+  updateDisputeStatusSuccess,
+  clearCurrentDispute,
+  
+  // Conversations
+  getConversationsStart,
+  getConversationsSuccess,
+  getConversationsFailure,
+  sendMessageSuccess
 } from "../store/reducer";
 
 // GET login
@@ -171,3 +190,120 @@ export const fetchConveyancerDeactivate =
       dispatch(getConveyancerDeactivateSuccess(response?.data)); // Dispatch success action
     }
   };
+
+// GET Disputes list
+export const fetchDisputes = (filters = {}) => async (dispatch) => {
+  dispatch(getDisputesStart());
+  console.log("Fetching disputes with filters:", filters);
+  const params = new URLSearchParams();
+  if (filters.status) params.append('status', filters.status);
+  if (filters.requester_id) params.append('requester_id', filters.requester_id);
+  
+  const endpoint = `/dispute?${params.toString()}`;
+  
+  const response = await ApiComponent({
+    method: "GET",
+    endpoint
+  });
+
+  if (response?.error) {
+    dispatch(getDisputesFailure(response.error));
+  } else {
+    dispatch(getDisputesSuccess(response.data));
+  }
+};
+
+// SET Disputes filters
+export const setFilters = (filters) => (dispatch) => {
+  dispatch(setDisputesFilters(filters));
+  dispatch(fetchDisputes(filters));
+};
+
+// GET Single dispute
+export const fetchDispute = (disputeId) => async (dispatch) => {
+  dispatch(getDisputeStart());
+  
+  const response = await ApiComponent({
+    method: "GET",
+    endpoint: `/dispute/${disputeId}`
+  });
+
+  if (response?.error) {
+    dispatch(getDisputeFailure(response.error));
+  } else {
+    dispatch(getDisputeSuccess(response.data));
+  }
+};
+
+// PATCH Update dispute status
+export const updateDisputeStatus = (disputeId, statusData) => async (dispatch) => {
+  dispatch(getDisputeStart());
+  console.log("Updating dispute status for ID:", disputeId, "with data:", statusData);
+  
+  const response = await ApiComponent({
+    method: "PATCH",
+    endpoint: `/dispute/${disputeId}/status`,
+    payload: {
+      status: statusData.status,
+      resolution: statusData.resolution || "", // Optional resolution notes
+    },
+    
+  });
+
+  if (response?.error) {
+    dispatch(getDisputeFailure(response.error));
+  } else {
+    dispatch(updateDisputeStatusSuccess(response.data));
+  }
+};
+
+// GET Dispute conversations
+export const fetchConversations = (disputeId) => async (dispatch) => {
+  dispatch(getConversationsStart());
+  
+  const response = await ApiComponent({
+    method: "GET",
+    endpoint: `/dispute/${disputeId}/conversations`
+  });
+
+  if (response?.error) {
+    dispatch(getConversationsFailure(response.error));
+  } else {
+    dispatch(getConversationsSuccess(response.data));
+  }
+};
+
+// POST Send message
+export const sendMessage = (disputeId, messageData) => async (dispatch) => {
+  const response = await ApiComponent({
+    method: "POST",
+    endpoint: `/dispute/${disputeId}/conversations`,
+    payload: {
+      dispute_id: disputeId,
+      message: messageData.message,
+      sender_id: messageData.sender_id, 
+      receiver_id: messageData.receiver_id 
+    }
+  });
+
+  if (!response?.error) {
+    dispatch(sendMessageSuccess(response.data));
+  }
+};
+
+// DELETE Dispute
+export const deleteDispute = (disputeId) => async (dispatch) => {
+  const response = await ApiComponent({
+    method: "DELETE",
+    endpoint: `/dispute/${disputeId}`
+  });
+
+  if (!response?.error) {
+    dispatch(deleteDisputeSuccess(disputeId));
+  }
+};
+
+// Clear current dispute
+export const clearDispute = () => (dispatch) => {
+  dispatch(clearCurrentDispute());
+};
