@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
@@ -13,6 +13,7 @@ import Switch from "@mui/material/Switch";
 const ConveyancerManagement = () => {
   const dispatch = useDispatch();
   const { conveyancerData } = useSelector((state) => state.reducerData);
+  const [pageNo, setPageNo] = useState(0); // current page (zero-based)
 
   useEffect(() => {
     if (!conveyancerData?.data?.conveyancer) {
@@ -22,6 +23,14 @@ const ConveyancerManagement = () => {
 
   const handleStatusToggle = (userId, currentStatus) => {
     dispatch(fetchConveyancerStatus(userId, currentStatus));
+  };
+
+  const handleSearchTextChange = (event) => {
+    const searchText = event.value;
+    if (searchText) {
+      // If search text is provided, filter users based on the search text
+      dispatch(fetchConveyancerList(1, searchText));
+    }
   };
 
   // Prepare columns and rows data for the table
@@ -94,17 +103,24 @@ const ConveyancerManagement = () => {
     ),
   }));
 
+  // Handle pagination trigger
+  const handlePaginationTrigger = (newPageNo) => {
+    setPageNo(newPageNo);
+    dispatch(fetchConveyancerList(newPageNo));
+  };
+
   return (
-    <>
-      {conveyancerData?.data?.conveyancer?.length && (
-        <Tables
-          columns={columns ? columns : []}
-          rows={rows ? rows : []}
-          title={"Conveyancer List"}
-          user={conveyancerData?.data?.conveyancer}
-        />
-      )}
-    </>
+    <Tables
+      columns={columns ? columns : []}
+      rows={rows ? rows : []}
+      title={"Conveyancer List"}
+      user={conveyancerData?.data?.conveyancer}
+      pageNo={pageNo}
+      setPageNo={setPageNo}
+      totalPages={conveyancerData?.data?.totalPages || 1}
+      handlePaginationTrigger={handlePaginationTrigger}
+      handleSearchTextChange={handleSearchTextChange}
+    />
   );
 };
 

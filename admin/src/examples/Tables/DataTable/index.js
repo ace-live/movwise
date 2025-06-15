@@ -35,6 +35,7 @@ function DataTable({
   setPageNo = () => {},
   totalPages = 1,
   handlePaginationTrigger = () => {},
+  handleSearchTextChange = () => {},
 }) {
   const defaultValue = entriesPerPage.defaultValue ?? 10;
   const entries = entriesPerPage.entries?.map((el) => el.toString()) ?? [
@@ -68,26 +69,28 @@ function DataTable({
     prepareRow,
     rows,
     page,
-    pageOptions,
     canPreviousPage,
     canNextPage,
     gotoPage,
-    nextPage,
-    previousPage,
     setPageSize,
     setGlobalFilter,
-    state: { pageSize, globalFilter },
+    state: { pageSize, globalFilter, pageIndex },
   } = tableInstance;
 
+  // Prevent re-render loop: only call gotoPage when necessary
   useEffect(() => {
-    if (pageNo >= 0 && pageNo < totalPages) {
+    if (pageIndex !== pageNo && pageNo >= 0 && pageNo < totalPages) {
       gotoPage(pageNo);
     }
-  }, [pageNo, gotoPage, totalPages]);
+  }, [pageNo, pageIndex, gotoPage, totalPages]);
 
+  // Prevent re-render loop: only update pageSize when changed
   useEffect(() => {
-    setPageSize(defaultValue || 10);
-  }, [defaultValue, setPageSize]);
+    const defaultPageSize = defaultValue || 10;
+    if (pageSize !== defaultPageSize) {
+      setPageSize(defaultPageSize);
+    }
+  }, [defaultValue, pageSize, setPageSize]);
 
   const [search, setSearch] = useState(globalFilter);
 
@@ -144,6 +147,7 @@ function DataTable({
                 size="small"
                 fullWidth
                 onChange={({ currentTarget }) => {
+                  handleSearchTextChange(currentTarget);
                   setSearch(currentTarget.value);
                   onSearchChange(currentTarget.value);
                 }}

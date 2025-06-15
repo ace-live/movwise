@@ -15,14 +15,27 @@ const UserManagement = () => {
 
   useEffect(() => {
     if (!userData?.user?.users) {
-      dispatch(fetchUser(pageNo));
+      dispatch(fetchUser());
     }
-  }, [pageNo]);
+  }, []);
 
   const handleStatusToggle = (userId, currentStatus) => {
     dispatch(fetchStatusUpdate(userId, currentStatus));
   };
 
+  // Handle pagination trigger
+  const handlePaginationTrigger = (newPageNo) => {
+    setPageNo(newPageNo);
+    dispatch(fetchUser(newPageNo));
+  };
+
+  const handleSearchTextChange = (event) => {
+    const searchText = event.value;
+    if (searchText) {
+      // If search text is provided, filter users based on the search text
+      dispatch(fetchUser(1, searchText));
+    }
+  };
   // Prepare columns and rows data for the table
   const columns = [
     { Header: "id", accessor: "id", align: "left" },
@@ -91,28 +104,17 @@ const UserManagement = () => {
     ),
   }));
 
-  // Handle pagination trigger
-  const handlePaginationTrigger = (newPageNo) => {
-    setPageNo(newPageNo);
-    dispatch(fetchUser(newPageNo));
-  };
-
   return (
-    <>
-      {userData?.user?.users?.length ? (
-        <Tables
-          columns={columns ? columns : []}
-          rows={rows ? rows : []}
-          title={"User List"}
-          pageNo={pageNo}
-          setPageNo={setPageNo}
-          totalPages={userData?.user?.totalPages || 1}
-          handlePaginationTrigger={handlePaginationTrigger}
-        />
-      ) : (
-        ""
-      )}
-    </>
+    <Tables
+      columns={columns ? columns : []}
+      rows={rows ? rows : []}
+      title={"User List"}
+      pageNo={pageNo}
+      setPageNo={setPageNo}
+      totalPages={userData?.user?.totalPages || 1}
+      handlePaginationTrigger={handlePaginationTrigger}
+      handleSearchTextChange={handleSearchTextChange}
+    />
   );
 };
 

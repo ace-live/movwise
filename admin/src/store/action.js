@@ -55,11 +55,13 @@ export const fetchLogin = (loginData) => async (dispatch) => {
 };
 
 // GET User details
-export const fetchUser = (pageNo) => async (dispatch) => {
+export const fetchUser = (pageNo, searchText) => async (dispatch) => {
   dispatch(getUserStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: `/user?limit=10${pageNo ? `&page=${pageNo + 1}` : ""}`,
+    endpoint: `/user?limit=10${pageNo ? `&page=${pageNo + 1}` : ""} ${
+      searchText ? `&filter=${searchText}` : ""
+    }`,
   });
 
   if (response?.error) {
@@ -71,7 +73,7 @@ export const fetchUser = (pageNo) => async (dispatch) => {
 };
 
 // edit user details
-export const fetchEditUserDetails = (values) => async (dispatch) => {
+export const fetchEditUserDetails = (values, navigate) => async (dispatch) => {
   dispatch(getEditUserDetailsStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "PUT",
@@ -88,6 +90,11 @@ export const fetchEditUserDetails = (values) => async (dispatch) => {
     dispatch(getEditUserDetailsFailure(response?.error)); // Dispatch failure action
   } else {
     dispatch(fetchUser()); // Fetch updated user data
+    if (navigate) {
+      setTimeout(() => {
+        navigate("/user-management"); // Navigate to user management page
+      }, 1000);
+    }
     dispatch(getEditUserDetailsSuccess(response?.data)); // Dispatch success action
   }
 };
@@ -114,19 +121,22 @@ export const fetchStatusUpdate =
   };
 
 // GET Conveyancer list
-export const fetchConveyancerList = () => async (dispatch) => {
-  dispatch(getConveyancerStart()); // Dispatch loading state
-  const response = await ApiComponent({
-    method: "GET",
-    endpoint: "/conveyancer",
-  });
+export const fetchConveyancerList =
+  (pageNo, searchText) => async (dispatch) => {
+    dispatch(getConveyancerStart()); // Dispatch loading state
+    const response = await ApiComponent({
+      method: "GET",
+      endpoint: `/conveyancer?limit=10${pageNo ? `&page=${pageNo + 1}` : ""} ${
+        searchText ? `&filter=${searchText}` : ""
+      }`,
+    });
 
-  if (response?.error) {
-    dispatch(getConveyancerFailure(response?.error)); // Dispatch failure action
-  } else {
-    dispatch(getConveyancerSuccess(response?.data)); // Dispatch success action
-  }
-};
+    if (response?.error) {
+      dispatch(getConveyancerFailure(response?.error)); // Dispatch failure action
+    } else {
+      dispatch(getConveyancerSuccess(response?.data)); // Dispatch success action
+    }
+  };
 
 // Conveyancer status details
 export const fetchConveyancerStatus =

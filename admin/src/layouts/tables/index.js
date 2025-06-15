@@ -14,6 +14,7 @@ function Tables({
   setPageNo,
   totalPages = 1,
   handlePaginationTrigger = () => {},
+  handleSearchTextChange = () => {},
 }) {
   return (
     <DashboardLayout>
@@ -48,6 +49,7 @@ function Tables({
                   setPageNo={setPageNo}
                   totalPages={totalPages}
                   handlePaginationTrigger={handlePaginationTrigger}
+                  handleSearchTextChange={handleSearchTextChange}
                 />
               </MDBox>
             </Card>
