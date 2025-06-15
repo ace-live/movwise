@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,8 +11,10 @@ import { Link } from "react-router-dom";
 const UserManagement = () => {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.reducerData);
+  const [pageNo, setPageNo] = useState(0); // current page (zero-based)
+
   useEffect(() => {
-    if (!userData?.user) {
+    if (!userData?.user?.users) {
       dispatch(fetchUser());
     }
   }, []);
@@ -21,6 +23,19 @@ const UserManagement = () => {
     dispatch(fetchStatusUpdate(userId, currentStatus));
   };
 
+  // Handle pagination trigger
+  const handlePaginationTrigger = (newPageNo) => {
+    setPageNo(newPageNo);
+    dispatch(fetchUser(newPageNo));
+  };
+
+  const handleSearchTextChange = (event) => {
+    const searchText = event.value;
+    if (searchText) {
+      // If search text is provided, filter users based on the search text
+      dispatch(fetchUser(1, searchText));
+    }
+  };
   // Prepare columns and rows data for the table
   const columns = [
     { Header: "id", accessor: "id", align: "left" },
@@ -33,7 +48,7 @@ const UserManagement = () => {
   ];
 
   // Build rows dynamically
-  const rows = userData?.user?.map((user) => ({
+  const rows = userData?.user?.users?.map((user) => ({
     id: (
       <MDTypography variant="gradient" size="sm">
         {user.user_id}
@@ -88,17 +103,18 @@ const UserManagement = () => {
       </Link>
     ),
   }));
-  // Assuming you have some DataTable component that takes columns and rows as props:
+
   return (
-    <>
-      {userData?.user?.length && (
-        <Tables
-          columns={columns ? columns : []}
-          rows={rows ? rows : []}
-          title={"User List"}
-        />
-      )}
-    </>
+    <Tables
+      columns={columns ? columns : []}
+      rows={rows ? rows : []}
+      title={"User List"}
+      pageNo={pageNo}
+      setPageNo={setPageNo}
+      totalPages={userData?.user?.totalPages || 1}
+      handlePaginationTrigger={handlePaginationTrigger}
+      handleSearchTextChange={handleSearchTextChange}
+    />
   );
 };
 

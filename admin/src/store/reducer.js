@@ -121,55 +121,30 @@ const conveyancerSlice = createSlice({
   },
 });
 
-//Conveyancer approval
-const ConveyancerApprovalSlice = createSlice({
-  name: "conveyancerApproval",
+//Conveyancer Status
+const ConveyancerStatusSlice = createSlice({
+  name: "conveyancerStatus",
   initialState: {
     data: null,
     loading: false,
     error: null,
   },
   reducers: {
-    getConveyancerApprovalStart: (state) => {
+    getConveyancerStatusStart: (state) => {
       state.loading = true;
       state.error = null;
     },
-    getConveyancerApprovalSuccess: (state, action) => {
+    getConveyancerStatusSuccess: (state, action) => {
       state.loading = false;
       state.data = action.payload;
     },
-    getConveyancerApprovalFailure: (state, action) => {
+    getConveyancerStatusFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
   },
 });
 
-//Conveyancer deactivate
-const ConveyancerDeactivateSlice = createSlice({
-  name: "conveyancerDeactivate",
-  initialState: {
-    data: null,
-    loading: false,
-    error: null,
-  },
-  reducers: {
-    getConveyancerDeactivateStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    getConveyancerDeactivateSuccess: (state, action) => {
-      state.loading = false;
-      state.data = action.payload;
-    },
-    getConveyancerDeactivateFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-  },
-});
-
-// Disputes List Slice
 // Disputes List Slice
 const disputeListSlice = createSlice({
   name: "disputeList",
@@ -288,15 +263,10 @@ export const {
   getStatusUpdateFailure,
 } = statusUpdateSlice.actions;
 export const {
-  getConveyancerApprovalStart,
-  getConveyancerApprovalSuccess,
-  getConveyancerApprovalFailure,
-} = ConveyancerApprovalSlice.actions;
-export const {
-  getConveyancerDeactivateStart,
-  getConveyancerDeactivateSuccess,
-  getConveyancerDeactivateFailure,
-} = ConveyancerDeactivateSlice.actions;
+  getConveyancerStatusStart,
+  getConveyancerStatusSuccess,
+  getConveyancerStatusFailure,
+} = ConveyancerStatusSlice.actions;
 
 export const {
   getDisputesStart,
@@ -327,12 +297,11 @@ const rootReducer = combineReducers({
   userData: userSlice.reducer,
   editUserData: editUserSlice.reducer,
   conveyancerData: conveyancerSlice.reducer,
-  statusUpdate: statusUpdateSlice.reducer,
-  conveyancerApproval: ConveyancerApprovalSlice.reducer,
-  conveyancerDeactivate: ConveyancerDeactivateSlice.reducer,
+  statusUpdate: statusUpdateSlice.reducer,  
   disputeList: disputeListSlice.reducer,
   dispute: disputeSlice.reducer,
   conversations: conversationsSlice.reducer,
+  conveyancerStatus: ConveyancerStatusSlice.reducer,
 });
 
 export default rootReducer;

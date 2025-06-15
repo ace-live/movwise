@@ -1,12 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchConveyancerList,
-  fetchConveyancerApproval,
-  fetchConveyancerDeactivate,
+  fetchConveyancerStatus,
 } from "../../store/action";
 import Tables from "layouts/tables";
 import Switch from "@mui/material/Switch";
@@ -14,18 +13,23 @@ import Switch from "@mui/material/Switch";
 const ConveyancerManagement = () => {
   const dispatch = useDispatch();
   const { conveyancerData } = useSelector((state) => state.reducerData);
+  const [pageNo, setPageNo] = useState(0); // current page (zero-based)
 
   useEffect(() => {
-    if (!conveyancerData?.data) {
+    if (!conveyancerData?.data?.conveyancer) {
       dispatch(fetchConveyancerList());
     }
   }, []);
 
   const handleStatusToggle = (userId, currentStatus) => {
-    if (currentStatus) {
-      dispatch(fetchConveyancerDeactivate(userId, currentStatus));
-    } else {
-      dispatch(fetchConveyancerApproval(userId, currentStatus));
+    dispatch(fetchConveyancerStatus(userId, currentStatus));
+  };
+
+  const handleSearchTextChange = (event) => {
+    const searchText = event.value;
+    if (searchText) {
+      // If search text is provided, filter users based on the search text
+      dispatch(fetchConveyancerList(1, searchText));
     }
   };
 
@@ -41,7 +45,7 @@ const ConveyancerManagement = () => {
   ];
 
   // Build rows dynamically
-  const rows = conveyancerData?.data?.map((user) => ({
+  const rows = conveyancerData?.data?.conveyancer?.map((user) => ({
     id: (
       <MDTypography variant="gradient" size="sm">
         {user.id}
@@ -99,17 +103,24 @@ const ConveyancerManagement = () => {
     ),
   }));
 
+  // Handle pagination trigger
+  const handlePaginationTrigger = (newPageNo) => {
+    setPageNo(newPageNo);
+    dispatch(fetchConveyancerList(newPageNo));
+  };
+
   return (
-    <>
-      {conveyancerData?.data?.length && (
-        <Tables
-          columns={columns ? columns : []}
-          rows={rows ? rows : []}
-          title={"Conveyancer List"}
-          user={conveyancerData?.data}
-        />
-      )}
-    </>
+    <Tables
+      columns={columns ? columns : []}
+      rows={rows ? rows : []}
+      title={"Conveyancer List"}
+      user={conveyancerData?.data?.conveyancer}
+      pageNo={pageNo}
+      setPageNo={setPageNo}
+      totalPages={conveyancerData?.data?.totalPages || 1}
+      handlePaginationTrigger={handlePaginationTrigger}
+      handleSearchTextChange={handleSearchTextChange}
+    />
   );
 };
 

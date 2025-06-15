@@ -96,7 +96,7 @@ const DisputeDashboard = () => {
           >
             <MenuItem value="">All Statuses</MenuItem>
             <MenuItem value="open">Open</MenuItem>
-            <MenuItem value="in_review">In Review</MenuItem>
+            {/* <MenuItem value="in_review">In Review</MenuItem> */}
             <MenuItem value="resolved">Resolved</MenuItem>
             <MenuItem value="rejected">Rejected</MenuItem>
           </Select>

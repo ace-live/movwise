@@ -36,7 +36,7 @@ const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
 
   const handleChangePage = (newPage) => {
     setPage(newPage);
-    onPageChange(newPage + 1); // API expects 1-based index
+    onPageChange(newPage); // API expects 1-based index
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -45,6 +45,7 @@ const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
     setPage(0); // Reset to first page
     onPageSizeChange(newRowsPerPage);
   };
+  
 
   // Prepare columns and rows data for the table
   const columns = [
@@ -55,7 +56,7 @@ const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
     { Header: "Description", accessor: "description", align: "left" },
     { Header: "Status", accessor: "status", align: "center" },
     { Header: "Created At", accessor: "created_at", align: "center" },
-    { Header: "Resolved At", accessor: "resolved_at", align: "center" },
+    // { Header: "Resolved At", accessor: "resolved_at", align: "center" },
     { Header: "Actions", accessor: "actions", align: "center" },
   ];
 
@@ -105,11 +106,11 @@ const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
         {new Date(dispute.created_at).toLocaleDateString("en-GB")}
       </MDTypography>
     ),
-    resolved_at: (
-      <MDTypography variant="caption" color="text" fontWeight="medium">
-        {dispute.resolved_at ? new Date(dispute.resolved_at).toLocaleDateString("en-GB") : '-'}
-      </MDTypography>
-    ),
+    // resolved_at: (
+    //   <MDTypography variant="caption" color="text" fontWeight="medium">
+    //     {dispute.resolved_at ? new Date(dispute.resolved_at).toLocaleDateString("en-GB") : '-'}
+    //   </MDTypography>
+    // ),
     actions: (
       <MDBox display="flex" justifyContent="center">
         <MDBox mr={1}>
@@ -162,22 +163,29 @@ const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
             columns,  // Your columns array
             rows      // Your formatted rows data
           }}
-          entriesPerPage={false}  // Disable default entries per page dropdown
-          canSearch={false}       // Disable built-in search since you have your own filters
-          showTotalEntries={true} // Show "Showing X to Y of Z entries"
-          pagination={{           // Pagination configuration
-            variant: "gradient",  // Styling (from your theme)
-            color: "info",        // Color scheme
-            page,                 // Current page (0-based index)
-            rowsPerPage: data?.limit || 5, // Current page size
-            rowsPerPageOptions: [5, 10, 25, 50], // Available page sizes
-            count: data?.totalRecords || 0,  // Total records for pagination math
-            onPageChange: handleChangePage,  // Page change handler
-            onRowsPerPageChange: handleChangeRowsPerPage // Page size handler
-          }}
+         pageNo={page}
+              setPageNo={setPage}
+              totalPages={ data?.totalPages || 1}
+              handlePaginationTrigger={ handleChangePage}
+          showTotalEntries={false} // Show "Showing X to Y of Z entries"
+          // pagination={{           // Pagination configuration
+          //   variant: "gradient",  // Styling (from your theme)
+          //   color: "info",        // Color scheme
+          //   page,                 // Current page (0-based index)
+          //   rowsPerPage: data?.limit || 5, // Current page size
+          //   rowsPerPageOptions: [5, 10, 25, 50], // Available page sizes
+          //   count: data?.totalRecords || 0,  // Total records for pagination math
+          //   onPageChange: handleChangePage,  // Page change handler
+          //   onRowsPerPageChange: handleChangeRowsPerPage // Page size handler
+          // }}
           isSorted={false}  // Disable column sorting
-          noEndBorder={true} // Remove border from last row
+          noEndBorder={true} // Remove border from last row          
+                  entriesPerPage={false}                  
+                  canSearch={false}
         />
+
+        
+
       ) : (
         <MDTypography variant="body2" color="text">
           No disputes found
