@@ -15,16 +15,13 @@ import {
   getStatusUpdateFailure,
   getStatusUpdateStart,
   getStatusUpdateSuccess,
-  getConveyancerApprovalFailure,
-  getConveyancerApprovalStart,
-  getConveyancerApprovalSuccess,
+  getConveyancerStatusFailure,
+  getConveyancerStatusStart,
+  getConveyancerStatusSuccess,
   //edit user details
   getEditUserDetailsStart,
   getEditUserDetailsSuccess,
   getEditUserDetailsFailure,
-  getConveyancerDeactivateStart,
-  getConveyancerDeactivateSuccess,
-  getConveyancerDeactivateFailure,
 } from "../store/reducer";
 
 // GET login
@@ -131,44 +128,23 @@ export const fetchConveyancerList = () => async (dispatch) => {
   }
 };
 
-// Conveyancer Approval details
-export const fetchConveyancerApproval =
+// Conveyancer status details
+export const fetchConveyancerStatus =
   (userId, currentStatus) => async (dispatch) => {
-    dispatch(getConveyancerApprovalStart()); // Dispatch loading state
+    dispatch(getConveyancerStatusStart()); // Dispatch loading state
     const response = await ApiComponent({
       method: "PATCH",
-      endpoint: `/conveyancer/${userId}/approve`,
+      endpoint: `/conveyancer/${userId}/status`,
       payload: {
-        // status: !currentStatus,
-        // status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
+        status: !currentStatus,
+        status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
       },
     });
 
     if (response?.error) {
-      dispatch(getConveyancerApprovalFailure(response?.error)); // Dispatch failure action
+      dispatch(getConveyancerStatusFailure(response?.error)); // Dispatch failure action
     } else {
       dispatch(fetchConveyancerList()); // Fetch updated conveyancer data
-      dispatch(getConveyancerApprovalSuccess(response?.data)); // Dispatch success action
-    }
-  };
-
-// Conveyancer deactivate details
-export const fetchConveyancerDeactivate =
-  (userId, currentStatus) => async (dispatch) => {
-    dispatch(getConveyancerDeactivateStart()); // Dispatch loading state
-    const response = await ApiComponent({
-      method: "PATCH",
-      endpoint: `/conveyancer/${userId}/soft-delete`,
-      payload: {
-        // status: !currentStatus,
-        // status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
-      },
-    });
-
-    if (response?.error) {
-      dispatch(getConveyancerDeactivateFailure(response?.error)); // Dispatch failure action
-    } else {
-      dispatch(fetchConveyancerList()); // Fetch updated conveyancer data
-      dispatch(getConveyancerDeactivateSuccess(response?.data)); // Dispatch success action
+      dispatch(getConveyancerStatusSuccess(response?.data)); // Dispatch success action
     }
   };

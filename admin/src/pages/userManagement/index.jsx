@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,9 @@ import { Link } from "react-router-dom";
 const UserManagement = () => {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.reducerData);
+  const [pageNo, setPageNo] = useState(1); // current page (zero-based)
+  const [totalPages, setTotalPages] = useState(0); // backend total pages
+
   useEffect(() => {
     if (!userData?.user?.users) {
       dispatch(fetchUser());
@@ -33,9 +36,9 @@ const UserManagement = () => {
   ];
 
   // Build rows dynamically
-   const mockRows =
+  const mockRows =
     userData?.user?.users[0] &&
-    Array.from({ length: 100 }, (_, i) => ({
+    Array.from({ length: 11 }, (_, i) => ({
       ...userData?.user?.users[0],
       user_id: i + 1,
     }));
@@ -102,6 +105,10 @@ const UserManagement = () => {
           columns={columns ? columns : []}
           rows={rows ? rows : []}
           title={"User List"}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+          totalPages={totalPages}
+          setTotalPages={setTotalPages}
         />
       )}
     </>

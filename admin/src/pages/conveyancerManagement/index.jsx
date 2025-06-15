@@ -5,8 +5,7 @@ import MDTypography from "components/MDTypography";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchConveyancerList,
-  fetchConveyancerApproval,
-  fetchConveyancerDeactivate,
+  fetchConveyancerStatus,
 } from "../../store/action";
 import Tables from "layouts/tables";
 import Switch from "@mui/material/Switch";
@@ -22,11 +21,7 @@ const ConveyancerManagement = () => {
   }, []);
 
   const handleStatusToggle = (userId, currentStatus) => {
-    if (currentStatus) {
-      dispatch(fetchConveyancerDeactivate(userId, currentStatus));
-    } else {
-      dispatch(fetchConveyancerApproval(userId, currentStatus));
-    }
+    dispatch(fetchConveyancerStatus(userId, currentStatus));
   };
 
   // Prepare columns and rows data for the table
