@@ -170,6 +170,7 @@ const ConveyancerDeactivateSlice = createSlice({
 });
 
 // Disputes List Slice
+// Disputes List Slice
 const disputeListSlice = createSlice({
   name: "disputeList",
   initialState: {
@@ -198,7 +199,12 @@ const disputeListSlice = createSlice({
       state.filters = action.payload;
     },
     deleteDisputeSuccess: (state, action) => {
-      state.data = state.data.filter(dispute => dispute.id !== action.payload);
+      if (state.data?.disputes) {
+        state.data.disputes = state.data.disputes.filter(
+          dispute => dispute.id !== action.payload
+        );
+        state.data.totalRecords -= 1;
+      }
     }
   }
 });

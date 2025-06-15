@@ -1,14 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { deleteDispute } from '../../../store/action';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-// Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
-import Tables from "layouts/tables";
 import DataTable from "examples/Tables/DataTable";
 
 const statusColor = (status) => {
@@ -26,10 +23,10 @@ const statusColor = (status) => {
   }
 };
 
-const DisputesTable = ({ disputes,filters,
-  onStatusChange,
-  onSearchChange, }) => {
+const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
   const dispatch = useDispatch();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(data?.limit || 10);
 
   const handleDelete = (disputeId) => {
     if (window.confirm('Are you sure you want to delete this dispute?')) {
@@ -37,19 +34,33 @@ const DisputesTable = ({ disputes,filters,
     }
   };
 
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+    onPageChange(newPage + 1); // API expects 1-based index
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0); // Reset to first page
+    onPageSizeChange(newRowsPerPage);
+  };
+
   // Prepare columns and rows data for the table
   const columns = [
     { Header: "ID", accessor: "id", align: "left" },
     { Header: "Requester ID", accessor: "requester_id", align: "left" },
+    { Header: "Conveyancer ID", accessor: "conveyancer_id", align: "left" },
     { Header: "Property Ref", accessor: "property_ref", align: "left" },
     { Header: "Description", accessor: "description", align: "left" },
     { Header: "Status", accessor: "status", align: "center" },
     { Header: "Created At", accessor: "created_at", align: "center" },
+    { Header: "Resolved At", accessor: "resolved_at", align: "center" },
     { Header: "Actions", accessor: "actions", align: "center" },
   ];
 
   // Build rows dynamically
-  const rows = disputes?.map((dispute) => ({
+  const rows = data?.disputes?.map((dispute) => ({
     id: (
       <MDTypography variant="caption" color="text" fontWeight="medium">
         {dispute.id}
@@ -58,6 +69,11 @@ const DisputesTable = ({ disputes,filters,
     requester_id: (
       <MDTypography variant="caption" color="text" fontWeight="medium">
         {dispute.requester_id}
+      </MDTypography>
+    ),
+    conveyancer_id: (
+      <MDTypography variant="caption" color="text" fontWeight="medium">
+        {dispute.conveyancer_id}
       </MDTypography>
     ),
     property_ref: (
@@ -89,6 +105,11 @@ const DisputesTable = ({ disputes,filters,
         {new Date(dispute.created_at).toLocaleDateString("en-GB")}
       </MDTypography>
     ),
+    resolved_at: (
+      <MDTypography variant="caption" color="text" fontWeight="medium">
+        {dispute.resolved_at ? new Date(dispute.resolved_at).toLocaleDateString("en-GB") : '-'}
+      </MDTypography>
+    ),
     actions: (
       <MDBox display="flex" justifyContent="center">
         <MDBox mr={1}>
@@ -117,32 +138,46 @@ const DisputesTable = ({ disputes,filters,
 
   return (
     <MDBox pt={3}>
-      {disputes?.length ? (
-        
-        
-                        <DataTable
-                          table={{ columns, rows }}
-                          isSorted={false}
-                          entriesPerPage={false}
-                          showTotalEntries={false}
-                          noEndBorder
-                        />
-          /* <Tables
-            columns={columns}
-            rows={rows}
-            title="Disputes Management"
-            showTotalEntries={false}
-            isSorted={false}
-            noEndBorder
-          /> */
-        // <Tables
-        //   columns={columns}
-        //   rows={rows}
-        //   title="Disputes Management"
-        //   showTotalEntries={false}
+      {data?.disputes?.length ? (
+        // <DataTable
+        //   table={{ 
+        //     columns, 
+        //     rows,
+        //     pagination: {
+        //       page,
+        //       rowsPerPage: data.limit,
+        //       rowsPerPageOptions: [5, 10, 25, 50],
+        //       count: data.totalRecords,
+        //       onPageChange: handleChangePage,
+        //       onRowsPerPageChange: handleChangeRowsPerPage
+        //     }
+        //   }}
         //   isSorted={false}
+        //   entriesPerPage={false}
+        //   showTotalEntries={true}
         //   noEndBorder
         // />
+        <DataTable
+          table={{ 
+            columns,  // Your columns array
+            rows      // Your formatted rows data
+          }}
+          entriesPerPage={false}  // Disable default entries per page dropdown
+          canSearch={false}       // Disable built-in search since you have your own filters
+          showTotalEntries={true} // Show "Showing X to Y of Z entries"
+          pagination={{           // Pagination configuration
+            variant: "gradient",  // Styling (from your theme)
+            color: "info",        // Color scheme
+            page,                 // Current page (0-based index)
+            rowsPerPage: data?.limit || 5, // Current page size
+            rowsPerPageOptions: [5, 10, 25, 50], // Available page sizes
+            count: data?.totalRecords || 0,  // Total records for pagination math
+            onPageChange: handleChangePage,  // Page change handler
+            onRowsPerPageChange: handleChangeRowsPerPage // Page size handler
+          }}
+          isSorted={false}  // Disable column sorting
+          noEndBorder={true} // Remove border from last row
+        />
       ) : (
         <MDTypography variant="body2" color="text">
           No disputes found

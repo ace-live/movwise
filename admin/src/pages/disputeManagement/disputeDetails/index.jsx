@@ -151,7 +151,7 @@ const DisputeDetail = () => {
                   color="info"
                   sx={{ color: 'success.main', borderColor: 'success.main' }}
                   onClick={() => handleStatusChange('resolved')}
-                  disabled={dispute.status === 'resolved'}
+                  disabled={dispute.status !== 'open'}
                 >
                   Resolve
                 </Button>
@@ -159,7 +159,7 @@ const DisputeDetail = () => {
                   variant="outlined"
                   
                   onClick={() => handleStatusChange('rejected')}
-                  disabled={dispute.status === 'rejected'}
+                  disabled={dispute.status !== 'open'}
                   sx={{ color: 'error.main', borderColor: 'error.main' }}
                 >
                   Reject

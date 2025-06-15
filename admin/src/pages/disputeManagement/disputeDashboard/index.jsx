@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Typography,
@@ -10,29 +10,54 @@ import {
   InputLabel,
   Box,
 } from '@mui/material';
+import DisputesTable from '../dispute/disputesTable';
+import { fetchDisputes } from '../../../store/action';
+import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDBox from "../../../components/MDBox";
 import MDTypography from "../../../components/MDTypography";
 import MDButton from "../../../components/MDButton";
-import DisputesTable from '../dispute/disputesTable';
-import { fetchDisputes, setFilters } from '../../../store/action';
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import DataTable from "examples/Tables/DataTable";
 
 const DisputeDashboard = () => {
   const dispatch = useDispatch();
-  const { data: disputes, loading, error, filters } = useSelector((state) => state.reducerData.disputeList);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filters, setFilters] = useState({
+    status: '',
+    requester_id: '',
+  });
+
+  const { data, loading, error } = useSelector((state) => state.reducerData.disputeList);
+
+  const fetchData = useCallback(() => {
+    dispatch(fetchDisputes({
+      ...filters,
+      page: page + 1, // API expects 1-based index
+      limit: rowsPerPage
+    }));
+  }, [dispatch, filters, page, rowsPerPage]);
 
   useEffect(() => {
-    dispatch(fetchDisputes(filters));
-  }, [dispatch]);
+    fetchData();
+  }, [fetchData]);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setRowsPerPage(newSize);
+    setPage(0); // Reset to first page when changing page size
+  };
 
   const handleStatusFilterChange = (e) => {
-    dispatch(setFilters({ ...filters, status: e.target.value }));
+    setFilters({ ...filters, status: e.target.value });
+    setPage(0); // Reset to first page when filters change
   };
 
   const handleSearchChange = (e) => {
-    dispatch(setFilters({ ...filters, requester_id: e.target.value }));
+    setFilters({ ...filters, requester_id: e.target.value });
+    setPage(0); // Reset to first page when filters change
   };
 
   return (
@@ -87,15 +112,17 @@ const DisputeDashboard = () => {
 
         
       <Box>
+
       {loading && <Typography>Loading...</Typography>}
       {error && <Typography color="error">Error: {error}</Typography>}
-      {!loading && !error && <DisputesTable disputes={disputes}
-  
-  // filters={filters}
-  // onStatusChange={handleStatusFilterChange}
-  // onSearchChange={handleSearchChange}  
-     />}
-     </Box>
+      {!loading && !error && (
+        <DisputesTable
+          data={data}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      )}
+    </Box>
 
   </Box>
   

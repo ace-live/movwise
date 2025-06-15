@@ -192,12 +192,14 @@ export const fetchConveyancerDeactivate =
   };
 
 // GET Disputes list
-export const fetchDisputes = (filters = {}) => async (dispatch) => {
+export const fetchDisputes = ({ status, requester_id, page = 1, limit = 10 }) => async (dispatch) => {
   dispatch(getDisputesStart());
-  console.log("Fetching disputes with filters:", filters);
+  
   const params = new URLSearchParams();
-  if (filters.status) params.append('status', filters.status);
-  if (filters.requester_id) params.append('requester_id', filters.requester_id);
+  if (status) params.append('status', status);
+  if (requester_id) params.append('requester_id', requester_id);
+  params.append('page', page);
+  params.append('limit', limit);
   
   const endpoint = `/dispute?${params.toString()}`;
   
