@@ -55,11 +55,11 @@ export const fetchLogin = (loginData) => async (dispatch) => {
 };
 
 // GET User details
-export const fetchUser = () => async (dispatch) => {
+export const fetchUser = (pageNo) => async (dispatch) => {
   dispatch(getUserStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: `/user?limit=10`,
+    endpoint: `/user?limit=10${pageNo ? `&page=${pageNo + 1}` : ""}`,
   });
 
   if (response?.error) {

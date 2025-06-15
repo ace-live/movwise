@@ -11,14 +11,13 @@ import { Link } from "react-router-dom";
 const UserManagement = () => {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.reducerData);
-  const [pageNo, setPageNo] = useState(1); // current page (zero-based)
-  const [totalPages, setTotalPages] = useState(0); // backend total pages
+  const [pageNo, setPageNo] = useState(0); // current page (zero-based)
 
   useEffect(() => {
     if (!userData?.user?.users) {
-      dispatch(fetchUser());
+      dispatch(fetchUser(pageNo));
     }
-  }, []);
+  }, [pageNo]);
 
   const handleStatusToggle = (userId, currentStatus) => {
     dispatch(fetchStatusUpdate(userId, currentStatus));
@@ -36,13 +35,7 @@ const UserManagement = () => {
   ];
 
   // Build rows dynamically
-  const mockRows =
-    userData?.user?.users[0] &&
-    Array.from({ length: 11 }, (_, i) => ({
-      ...userData?.user?.users[0],
-      user_id: i + 1,
-    }));
-  const rows = mockRows?.map((user) => ({
+  const rows = userData?.user?.users?.map((user) => ({
     id: (
       <MDTypography variant="gradient" size="sm">
         {user.user_id}
@@ -97,19 +90,27 @@ const UserManagement = () => {
       </Link>
     ),
   }));
-  // Assuming you have some DataTable component that takes columns and rows as props:
+
+  // Handle pagination trigger
+  const handlePaginationTrigger = (newPageNo) => {
+    setPageNo(newPageNo);
+    dispatch(fetchUser(newPageNo));
+  };
+
   return (
     <>
-      {userData?.user?.users?.length && (
+      {userData?.user?.users?.length ? (
         <Tables
           columns={columns ? columns : []}
           rows={rows ? rows : []}
           title={"User List"}
           pageNo={pageNo}
           setPageNo={setPageNo}
-          totalPages={totalPages}
-          setTotalPages={setTotalPages}
+          totalPages={userData?.user?.totalPages || 1}
+          handlePaginationTrigger={handlePaginationTrigger}
         />
+      ) : (
+        ""
       )}
     </>
   );

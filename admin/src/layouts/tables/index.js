@@ -12,8 +12,8 @@ function Tables({
   title,
   pageNo,
   setPageNo,
-  totalPages,
-  setTotalPages,
+  totalPages = 1,
+  handlePaginationTrigger = () => {},
 }) {
   return (
     <DashboardLayout>
@@ -47,7 +47,7 @@ function Tables({
                   pageNo={pageNo}
                   setPageNo={setPageNo}
                   totalPages={totalPages}
-                  setTotalPages={setTotalPages}
+                  handlePaginationTrigger={handlePaginationTrigger}
                 />
               </MDBox>
             </Card>
