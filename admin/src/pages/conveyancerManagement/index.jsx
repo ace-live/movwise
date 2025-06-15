@@ -27,10 +27,8 @@ const ConveyancerManagement = () => {
 
   const handleSearchTextChange = (event) => {
     const searchText = event.value;
-    if (searchText) {
-      // If search text is provided, filter users based on the search text
-      dispatch(fetchConveyancerList(1, searchText));
-    }
+    // If search text is provided, filter users based on the search text
+    dispatch(fetchConveyancerList(0, searchText));
   };
 
   // Prepare columns and rows data for the table
