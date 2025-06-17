@@ -4,7 +4,6 @@ import {
   useTable,
   usePagination,
   useGlobalFilter,
-  useAsyncDebounce,
   useSortBy,
 } from "react-table";
 
@@ -73,7 +72,6 @@ function DataTable({
     canNextPage,
     gotoPage,
     setPageSize,
-    setGlobalFilter,
     state: { pageSize, globalFilter, pageIndex },
   } = tableInstance;
 
@@ -93,10 +91,6 @@ function DataTable({
   }, [defaultValue, pageSize, setPageSize]);
 
   const [search, setSearch] = useState(globalFilter);
-
-  const onSearchChange = useAsyncDebounce((value) => {
-    setGlobalFilter(value || undefined);
-  }, 100);
 
   const setSortedValue = (column) => {
     if (!isSorted) return false;
@@ -149,7 +143,6 @@ function DataTable({
                 onChange={({ currentTarget }) => {
                   handleSearchTextChange(currentTarget);
                   setSearch(currentTarget.value);
-                  onSearchChange(currentTarget.value);
                 }}
               />
             </MDBox>

@@ -102,6 +102,7 @@ export const fetchEditUserDetails = (values, navigate) => async (dispatch) => {
       email: values?.email,
       status_desc: values?.status_description,
       status: values?.status,
+      phone: values?.phone, // Include phone number if available
     },
   });
 
