@@ -15,16 +15,32 @@ import {
   getStatusUpdateFailure,
   getStatusUpdateStart,
   getStatusUpdateSuccess,
-  getConveyancerApprovalFailure,
-  getConveyancerApprovalStart,
-  getConveyancerApprovalSuccess,
+  getConveyancerStatusFailure,
+  getConveyancerStatusStart,
+  getConveyancerStatusSuccess,
   //edit user details
   getEditUserDetailsStart,
   getEditUserDetailsSuccess,
   getEditUserDetailsFailure,
-  getConveyancerDeactivateStart,
-  getConveyancerDeactivateSuccess,
-  getConveyancerDeactivateFailure,
+   // Disputes List
+  getDisputesStart,
+  getDisputesSuccess,
+  getDisputesFailure,
+  setDisputesFilters,
+  deleteDisputeSuccess,
+  
+  // Single Dispute
+  getDisputeStart,
+  getDisputeSuccess,
+  getDisputeFailure,
+  updateDisputeStatusSuccess,
+  clearCurrentDispute,
+  
+  // Conversations
+  getConversationsStart,
+  getConversationsSuccess,
+  getConversationsFailure,
+  sendMessageSuccess
 } from "../store/reducer";
 
 // GET login
@@ -58,11 +74,13 @@ export const fetchLogin = (loginData) => async (dispatch) => {
 };
 
 // GET User details
-export const fetchUser = () => async (dispatch) => {
+export const fetchUser = (pageNo, searchText) => async (dispatch) => {
   dispatch(getUserStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "GET",
-    endpoint: "/user",
+    endpoint: `/user?limit=10${pageNo ? `&page=${pageNo + 1}` : ""} ${
+      searchText ? `&filter=${searchText}` : ""
+    }`,
   });
 
   if (response?.error) {
@@ -70,14 +88,15 @@ export const fetchUser = () => async (dispatch) => {
   } else {
     dispatch(getUserSuccess(response?.data)); // Dispatch success action
   }
+  return response;
 };
 
 // edit user details
-export const fetchEditUserDetails = (values) => async (dispatch) => {
+export const fetchEditUserDetails = (values, navigate) => async (dispatch) => {
   dispatch(getEditUserDetailsStart()); // Dispatch loading state
   const response = await ApiComponent({
     method: "PUT",
-    endpoint: `/users/${values?.id}`,
+    endpoint: `/user/${values?.id}`,
     payload: {
       name: values?.name,
       email: values?.email,
@@ -90,6 +109,11 @@ export const fetchEditUserDetails = (values) => async (dispatch) => {
     dispatch(getEditUserDetailsFailure(response?.error)); // Dispatch failure action
   } else {
     dispatch(fetchUser()); // Fetch updated user data
+    if (navigate) {
+      setTimeout(() => {
+        navigate("/user-management"); // Navigate to user management page
+      }, 1000);
+    }
     dispatch(getEditUserDetailsSuccess(response?.data)); // Dispatch success action
   }
 };
@@ -103,7 +127,7 @@ export const fetchStatusUpdate =
       endpoint: `/user/${userId}/status`,
       payload: {
         status: !currentStatus,
-        status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
+        status_desc: currentStatus ? "System Inactive" : "System Active", // Toggle status description
       },
     });
 
@@ -116,58 +140,159 @@ export const fetchStatusUpdate =
   };
 
 // GET Conveyancer list
-export const fetchConveyancerList = () => async (dispatch) => {
-  dispatch(getConveyancerStart()); // Dispatch loading state
+export const fetchConveyancerList =
+  (pageNo, searchText) => async (dispatch) => {
+    dispatch(getConveyancerStart()); // Dispatch loading state
+    const response = await ApiComponent({
+      method: "GET",
+      endpoint: `/conveyancer?limit=10${pageNo ? `&page=${pageNo + 1}` : ""} ${
+        searchText ? `&filter=${searchText}` : ""
+      }`,
+    });
+
+    if (response?.error) {
+      dispatch(getConveyancerFailure(response?.error)); // Dispatch failure action
+    } else {
+      dispatch(getConveyancerSuccess(response?.data)); // Dispatch success action
+    }
+  };
+
+// Conveyancer status details
+export const fetchConveyancerStatus =
+  (userId, currentStatus) => async (dispatch) => {
+    dispatch(getConveyancerStatusStart()); // Dispatch loading state
+    const response = await ApiComponent({
+      method: "PATCH",
+      endpoint: `/conveyancer/${userId}/status`,
+      payload: {
+        status: !currentStatus,
+        status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
+      },
+    });
+
+    if (response?.error) {
+      dispatch(getConveyancerStatusFailure(response?.error)); // Dispatch failure action
+    } else {
+      dispatch(fetchConveyancerList()); // Fetch updated conveyancer data
+      dispatch(getConveyancerStatusSuccess(response?.data)); // Dispatch success action
+    }
+  };
+
+// GET Disputes list
+export const fetchDisputes = ({ status, requester_id, page = 1, limit = 10 }) => async (dispatch) => {
+  dispatch(getDisputesStart());
+  
+  const params = new URLSearchParams();
+  if (status) params.append('status', status);
+  if (requester_id) params.append('requester_id', requester_id);
+  params.append('page', page);
+  params.append('limit', limit);
+  
+  const endpoint = `/dispute?${params.toString()}`;
+  
   const response = await ApiComponent({
     method: "GET",
-    endpoint: "/conveyancer",
+    endpoint
   });
 
   if (response?.error) {
-    dispatch(getConveyancerFailure(response?.error)); // Dispatch failure action
+    dispatch(getDisputesFailure(response.error));
   } else {
-    dispatch(getConveyancerSuccess(response?.data)); // Dispatch success action
+    dispatch(getDisputesSuccess(response.data));
   }
 };
 
-// Conveyancer Approval details
-export const fetchConveyancerApproval =
-  (userId, currentStatus) => async (dispatch) => {
-    dispatch(getConveyancerApprovalStart()); // Dispatch loading state
-    const response = await ApiComponent({
-      method: "PATCH",
-      endpoint: `/conveyancer/${userId}/approve`,
-      payload: {
-        // status: !currentStatus,
-        // status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
-      },
-    });
+// SET Disputes filters
+export const setFilters = (filters) => (dispatch) => {
+  dispatch(setDisputesFilters(filters));
+  dispatch(fetchDisputes(filters));
+};
 
-    if (response?.error) {
-      dispatch(getConveyancerApprovalFailure(response?.error)); // Dispatch failure action
-    } else {
-      dispatch(fetchConveyancerList()); // Fetch updated conveyancer data
-      dispatch(getConveyancerApprovalSuccess(response?.data)); // Dispatch success action
+// GET Single dispute
+export const fetchDispute = (disputeId) => async (dispatch) => {
+  dispatch(getDisputeStart());
+  
+  const response = await ApiComponent({
+    method: "GET",
+    endpoint: `/dispute/${disputeId}`
+  });
+
+  if (response?.error) {
+    dispatch(getDisputeFailure(response.error));
+  } else {
+    dispatch(getDisputeSuccess(response.data));
+  }
+};
+
+// PATCH Update dispute status
+export const updateDisputeStatus = (disputeId, statusData) => async (dispatch) => {
+  dispatch(getDisputeStart());
+  console.log("Updating dispute status for ID:", disputeId, "with data:", statusData);
+  
+  const response = await ApiComponent({
+    method: "PATCH",
+    endpoint: `/dispute/${disputeId}/status`,
+    payload: {
+      status: statusData.status,
+      resolution: statusData.resolution || "", // Optional resolution notes
+    },
+    
+  });
+
+  if (response?.error) {
+    dispatch(getDisputeFailure(response.error));
+  } else {
+    dispatch(updateDisputeStatusSuccess(response.data));
+  }
+};
+
+// GET Dispute conversations
+export const fetchConversations = (disputeId) => async (dispatch) => {
+  dispatch(getConversationsStart());
+  
+  const response = await ApiComponent({
+    method: "GET",
+    endpoint: `/dispute/${disputeId}/conversations`
+  });
+
+  if (response?.error) {
+    dispatch(getConversationsFailure(response.error));
+  } else {
+    dispatch(getConversationsSuccess(response.data));
+  }
+};
+
+// POST Send message
+export const sendMessage = (disputeId, messageData) => async (dispatch) => {
+  const response = await ApiComponent({
+    method: "POST",
+    endpoint: `/dispute/${disputeId}/conversations`,
+    payload: {
+      dispute_id: disputeId,
+      message: messageData.message,
+      sender_id: messageData.sender_id, 
+      receiver_id: messageData.receiver_id 
     }
-  };
+  });
 
-// Conveyancer deactivate details
-export const fetchConveyancerDeactivate =
-  (userId, currentStatus) => async (dispatch) => {
-    dispatch(getConveyancerDeactivateStart()); // Dispatch loading state
-    const response = await ApiComponent({
-      method: "PATCH",
-      endpoint: `/conveyancer/${userId}/soft-delete`,
-      payload: {
-        // status: !currentStatus,
-        // status_desc: currentStatus ? "Inactive" : "Active", // Toggle status description
-      },
-    });
+  if (!response?.error) {
+    dispatch(sendMessageSuccess(response.data));
+  }
+};
 
-    if (response?.error) {
-      dispatch(getConveyancerDeactivateFailure(response?.error)); // Dispatch failure action
-    } else {
-      dispatch(fetchConveyancerList()); // Fetch updated conveyancer data
-      dispatch(getConveyancerDeactivateSuccess(response?.data)); // Dispatch success action
-    }
-  };
+// DELETE Dispute
+export const deleteDispute = (disputeId) => async (dispatch) => {
+  const response = await ApiComponent({
+    method: "DELETE",
+    endpoint: `/dispute/${disputeId}`
+  });
+
+  if (!response?.error) {
+    dispatch(deleteDisputeSuccess(disputeId));
+  }
+};
+
+// Clear current dispute
+export const clearDispute = () => (dispatch) => {
+  dispatch(clearCurrentDispute());
+};

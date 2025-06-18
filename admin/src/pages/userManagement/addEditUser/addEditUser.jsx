@@ -5,10 +5,11 @@ import { TextField, Grid, MenuItem } from "@mui/material";
 import MDButton from "components/MDButton";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, fetchEditUserDetails } from "../../../store/action";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const AddEditUserManagement = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,10 +23,10 @@ const AddEditUserManagement = () => {
   const { userData } = useSelector((state) => state.reducerData);
 
   useEffect(() => {
-    if (!userData?.user) {
+    if (!userData?.user?.users) {
       dispatch(fetchUser());
     } else {
-      const selectedUser = userData.user.find(
+      const selectedUser = userData?.user?.users?.find(
         (user) => String(user.user_id) === String(id)
       );
       if (selectedUser) {
@@ -77,7 +78,7 @@ const AddEditUserManagement = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    dispatch(fetchEditUserDetails({ ...formData, id })); // Pass formData and id to the action
+    dispatch(fetchEditUserDetails({ ...formData, id }, navigate)); // Pass formData and id to the action
   };
 
   return (
