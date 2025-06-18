@@ -96,7 +96,7 @@ exports.updateUser = async (req, res) => {
 
     const updateResult = await pool.query(
       'UPDATE users SET name = $1, email = $2, phone = $3, status = $4, status_desc = $5 WHERE user_id = $6 RETURNING user_id, name, email',
-      [email, phone, status, status_desc, id]
+      [name, email, phone, status, status_desc, id]
     );
     res.status(200).json(updateResult.rows[0]);
   } catch (err) {
