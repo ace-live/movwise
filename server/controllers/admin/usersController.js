@@ -19,7 +19,7 @@ exports.getUsers = async (req, res) => {
       countResult = await pool.query('SELECT COUNT(*) FROM users');
       // No filter applied
       result = await pool.query(
-        'SELECT * FROM users ORDER BY user_id LIMIT $1 OFFSET $2',
+        'SELECT user_id, name, email, phone, status, status_desc FROM users ORDER BY user_id LIMIT $1 OFFSET $2',
         [limit, offset]
       );
     } else {
@@ -29,7 +29,7 @@ exports.getUsers = async (req, res) => {
       );
       // Filter applied
       result = await pool.query(
-        'SELECT * FROM users WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1 ORDER BY user_id LIMIT $2 OFFSET $3',
+        'SELECT user_id, name, email, phone, status, status_desc FROM users WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1 ORDER BY user_id LIMIT $2 OFFSET $3',
         [`%${filter}%`, limit, offset]
       );
     }
@@ -84,7 +84,7 @@ exports.createUser = async (req, res) => {
 // Update user details
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { email, phone, status, status_desc } = req.body;
+  const { name, email, phone, status, status_desc } = req.body;
   
 
   try {
@@ -95,8 +95,8 @@ exports.updateUser = async (req, res) => {
     // const hashedPassword = password ? await bcrypt.hash(password, 10) : existingUserResult.rows[0].password;
 
     const updateResult = await pool.query(
-      'UPDATE users SET email = $1, phone = $2, status = $3, status_desc = $4 WHERE user_id = $5 RETURNING user_id, name, email',
-      [email, phone, status, status_desc, id]
+      'UPDATE users SET name = $1, email = $2, phone = $3, status = $4, status_desc = $5 WHERE user_id = $6 RETURNING user_id, name, email',
+      [name, email, phone, status, status_desc, id]
     );
     res.status(200).json(updateResult.rows[0]);
   } catch (err) {

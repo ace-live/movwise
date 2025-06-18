@@ -2,43 +2,64 @@ const pool = require('../../config/db');
 
 // Get all disputes
 exports.getDisputes = async (req, res) => {
-  try {
-    let { status, requester_id, conveyancer_id, property_ref_id, page, limit } = req.query;  // Optional filters
-    let query = 'SELECT * FROM disputes WHERE 1=1';
-    let queryParams = [];
+    try {
+    let { status, requester_id, conveyancer_id, property_ref_id, page, limit, filter } = req.query;
 
+    let baseQuery = `
+    FROM disputes
+    JOIN users ON disputes.requester_id = users.user_id
+    JOIN conveyancers ON disputes.conveyancer_id = conveyancers.id
+    WHERE 1=1
+  `;
+
+    const queryParams = [];
+
+    // Apply filters
     if (status) {
-      query += ' AND status = $' + (queryParams.length + 1);
       queryParams.push(status);
+      baseQuery += ` AND disputes.status = $${queryParams.length}`;
     }
     if (requester_id) {
-      query += ' AND requester_id = $' + (queryParams.length + 1);
       queryParams.push(requester_id);
+      baseQuery += ` AND disputes.requester_id = $${queryParams.length}`;
     }
     if (conveyancer_id) {
-      query += ' AND conveyancer_id = $' + (queryParams.length + 1);
       queryParams.push(conveyancer_id);
+      baseQuery += ` AND disputes.conveyancer_id = $${queryParams.length}`;
     }
     if (property_ref_id) {
-      query += ' AND property_ref_id = $' + (queryParams.length + 1);
       queryParams.push(property_ref_id);
+      baseQuery += ` AND disputes.property_ref_id = $${queryParams.length}`;
     }
+
+    // Apply filter (search)
+    if (filter && filter.trim() !== '') {
+      queryParams.push(`%${filter.toLowerCase()}%`);
+      baseQuery += ` AND (LOWER(users.name) LIKE $${queryParams.length} OR LOWER(conveyancers.name) LIKE $${queryParams.length} OR LOWER(disputes.description) LIKE $${queryParams.length})`;
+    }
+
+    // Pagination
     page = parseInt(page);
     limit = parseInt(limit);
     page = isNaN(page) || page < 1 ? 1 : page;
     limit = isNaN(limit) || limit < 1 ? 10 : limit;
-
     const offset = (page - 1) * limit;
 
-    let result, countResult;
-    let totalRecords, totalPages;
-    countResult = await pool.query('SELECT COUNT(*) FROM disputes');
-    // No filter applied, just pagination
-    query += ' ORDER BY created_at DESC LIMIT $' + (queryParams.length + 1) + ' OFFSET $' + (queryParams.length + 2);
-    queryParams.push(limit, offset);
-    totalRecords = parseInt(countResult.rows[0].count);
-    totalPages = Math.ceil(totalRecords / limit);
-    result = await pool.query(query, queryParams);
+    // Count query
+    const countQuery = `SELECT COUNT(*) ${baseQuery}`;
+    const countResult = await pool.query(countQuery, queryParams);
+    const totalRecords = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    // Data query with ORDER + LIMIT/OFFSET
+    const dataQuery = `
+    SELECT disputes.*, users.name AS requester_name, conveyancers.name AS conveyancers_name
+    ${baseQuery}
+    ORDER BY disputes.created_at DESC
+    LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
+  `;
+    const result = await pool.query(dataQuery, [...queryParams, limit, offset]);
+
     return res.status(200).json({
       page,
       limit,
@@ -50,6 +71,7 @@ exports.getDisputes = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+
 };
 
 // Get a specific dispute by ID
