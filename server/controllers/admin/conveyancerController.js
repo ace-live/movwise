@@ -4,7 +4,7 @@ const pool = require('../../config/db');
 exports.getConveyancers = async (req, res) => {
   try {
     let { is_verified, name, email, filter, page, limit } = req.query;
-    let query = 'SELECT name,email,phone,status,status_desc FROM conveyancers WHERE 1=1';
+    let query = 'SELECT id,name,email,phone,status,status_desc FROM conveyancers WHERE 1=1';
     let queryParams = [];
 
     // Build dynamic WHERE conditions safely
