@@ -102,6 +102,7 @@ export const fetchEditUserDetails = (values, navigate) => async (dispatch) => {
       email: values?.email,
       status_desc: values?.status_description,
       status: values?.status,
+      phone: values?.phone, // Include phone number if available
     },
   });
 
@@ -179,12 +180,12 @@ export const fetchConveyancerStatus =
   };
 
 // GET Disputes list
-export const fetchDisputes = ({ status, requester_id, page = 1, limit = 10 }) => async (dispatch) => {
+export const fetchDisputes = ({ status, page = 1, limit = 10, filter}) => async (dispatch) => {
   dispatch(getDisputesStart());
   
   const params = new URLSearchParams();
   if (status) params.append('status', status);
-  if (requester_id) params.append('requester_id', requester_id);
+  if (filter) params.append('filter', filter);
   params.append('page', page);
   params.append('limit', limit);
   

@@ -35,6 +35,7 @@ const AddEditUserManagement = () => {
           email: selectedUser.email || "",
           status: selectedUser.status ?? true,
           status_description: selectedUser.status_desc || "",
+          phone: selectedUser.phone || "",
         });
       }
     }
@@ -61,7 +62,9 @@ const AddEditUserManagement = () => {
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
       newErrors.email = "Email is not valid";
     }
-
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
     if (
       formData.status_description.trim().length > 0 &&
       formData.status_description.trim().length < 5
@@ -124,8 +127,25 @@ const AddEditUserManagement = () => {
             />
           </Grid>
 
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Phone"
+              type="number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              autoComplete="phone"
+              margin="normal"
+              variant="outlined"
+              fullWidth
+              color="primary"
+              required
+              error={Boolean(errors.phone)}
+              helperText={errors.phone}
+            />
+          </Grid>
           {/* Status */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               select
               label="Status"

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import { Tooltip } from "@mui/material";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,9 +17,7 @@ const ConveyancerManagement = () => {
   const [pageNo, setPageNo] = useState(0); // current page (zero-based)
 
   useEffect(() => {
-    if (!conveyancerData?.data?.conveyancer) {
-      dispatch(fetchConveyancerList());
-    }
+    dispatch(fetchConveyancerList());
   }, []);
 
   const handleStatusToggle = (userId, currentStatus) => {
@@ -33,7 +32,8 @@ const ConveyancerManagement = () => {
 
   // Prepare columns and rows data for the table
   const columns = [
-    { Header: "id", accessor: "id", align: "left" },
+    { Header: "S No", accessor: "s_no", align: "left" },
+    // { Header: "id", accessor: "id", align: "left" },
     { Header: "name", accessor: "name", align: "left" },
     { Header: "email", accessor: "email", align: "left" },
     { Header: "phone", accessor: "phone", align: "left" },
@@ -43,12 +43,17 @@ const ConveyancerManagement = () => {
   ];
 
   // Build rows dynamically
-  const rows = conveyancerData?.data?.conveyancer?.map((user) => ({
-    id: (
+  const rows = conveyancerData?.data?.conveyancer?.map((user, index) => ({
+    s_no: (
       <MDTypography variant="gradient" size="sm">
-        {user.id}
+        {index + 1}
       </MDTypography>
     ),
+    // id: (
+    //   <MDTypography variant="gradient" size="sm">
+    //     {user.id}
+    //   </MDTypography>
+    // ),
     name: (
       <MDTypography variant="gradient" size="sm">
         {user.name}
@@ -64,17 +69,22 @@ const ConveyancerManagement = () => {
         {user.phone}
       </MDTypography>
     ),
-    // Profile: (
-    //   <MDTypography variant="gradient" size="sm">
-    //     {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
-    //   </MDTypography>
-    // ),
     status: (
       <MDBox ml={-1}>
-        <Switch
-          checked={user.is_verified}
-          onChange={() => handleStatusToggle(user.id, user.is_verified)}
-        />
+        <Tooltip title={user.status_desc} placement="right">
+          <Switch
+            sx={{
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: "#2e7d32 !important", // success.main from MUI theme
+              },
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: "#2e7d32 !important",
+              },
+            }}
+            checked={user.status}
+            onChange={() => handleStatusToggle(user.id, user.status)}
+          />
+        </Tooltip>
       </MDBox>
     ),
     employed: (

@@ -167,17 +167,8 @@ const DisputesTable = ({ data, onPageChange, onPageSizeChange }) => {
               setPageNo={setPage}
               totalPages={ data?.totalPages || 1}
               handlePaginationTrigger={ handleChangePage}
-          showTotalEntries={false} // Show "Showing X to Y of Z entries"
-          // pagination={{           // Pagination configuration
-          //   variant: "gradient",  // Styling (from your theme)
-          //   color: "info",        // Color scheme
-          //   page,                 // Current page (0-based index)
-          //   rowsPerPage: data?.limit || 5, // Current page size
-          //   rowsPerPageOptions: [5, 10, 25, 50], // Available page sizes
-          //   count: data?.totalRecords || 0,  // Total records for pagination math
-          //   onPageChange: handleChangePage,  // Page change handler
-          //   onRowsPerPageChange: handleChangeRowsPerPage // Page size handler
-          // }}
+          showTotalEntries={false} 
+          
           isSorted={false}  // Disable column sorting
           noEndBorder={true} // Remove border from last row          
                   entriesPerPage={false}                  

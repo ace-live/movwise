@@ -14,9 +14,7 @@ const UserManagement = () => {
   const [pageNo, setPageNo] = useState(0); // current page (zero-based)
 
   useEffect(() => {
-    if (!userData?.user?.users) {
-      dispatch(fetchUser());
-    }
+    dispatch(fetchUser());
   }, []);
 
   const handleStatusToggle = (userId, currentStatus) => {
@@ -36,22 +34,28 @@ const UserManagement = () => {
   };
   // Prepare columns and rows data for the table
   const columns = [
-    { Header: "id", accessor: "id", align: "left" },
+    { Header: "S No", accessor: "s_no", align: "left" },
+    // { Header: "id", accessor: "id", align: "left" },
     { Header: "name", accessor: "name", align: "left" },
     { Header: "email", accessor: "email", align: "left" },
     { Header: "phone", accessor: "phone", align: "left" },
-    { Header: "role", accessor: "role", align: "center" },
+    // { Header: "role", accessor: "role", align: "center" },
     { Header: "status", accessor: "status", align: "center" },
     { Header: "action", accessor: "action", align: "center" },
   ];
 
   // Build rows dynamically
-  const rows = userData?.user?.users?.map((user) => ({
-    id: (
+  const rows = userData?.user?.users?.map((user, index) => ({
+    s_no: (
       <MDTypography variant="gradient" size="sm">
-        {user.user_id}
+        {index + 1}
       </MDTypography>
     ),
+    // id: (
+    //   <MDTypography variant="gradient" size="sm">
+    //     {user.user_id}
+    //   </MDTypography>
+    // ),
     name: (
       <MDTypography variant="gradient" size="sm">
         {user.name}
@@ -67,15 +71,23 @@ const UserManagement = () => {
         {user.phone}
       </MDTypography>
     ),
-    role: (
-      <MDTypography variant="gradient" size="sm">
-        {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
-      </MDTypography>
-    ),
+    // role: (
+    //   <MDTypography variant="gradient" size="sm">
+    //     {user.is_seller ? "Seller" : user.is_buyer ? "Buyer" : ""}
+    //   </MDTypography>
+    // ),
     status: (
       <MDBox ml={-1}>
         <Tooltip title={user.status_desc} placement="right">
           <Switch
+            sx={{
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: "#2e7d32 !important", // success.main from MUI theme
+              },
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: "#2e7d32 !important",
+              },
+            }}
             checked={user.status}
             onChange={() => handleStatusToggle(user.user_id, user.status)}
           />
