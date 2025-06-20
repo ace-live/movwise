@@ -33,7 +33,7 @@ const ConveyancerManagement = () => {
   // Prepare columns and rows data for the table
   const columns = [
     { Header: "S No", accessor: "s_no", align: "left" },
-    { Header: "id", accessor: "id", align: "left" },
+    // { Header: "id", accessor: "id", align: "left" },
     { Header: "name", accessor: "name", align: "left" },
     { Header: "email", accessor: "email", align: "left" },
     { Header: "phone", accessor: "phone", align: "left" },
@@ -49,11 +49,11 @@ const ConveyancerManagement = () => {
         {index + 1}
       </MDTypography>
     ),
-    id: (
-      <MDTypography variant="gradient" size="sm">
-        {user.id}
-      </MDTypography>
-    ),
+    // id: (
+    //   <MDTypography variant="gradient" size="sm">
+    //     {user.id}
+    //   </MDTypography>
+    // ),
     name: (
       <MDTypography variant="gradient" size="sm">
         {user.name}
