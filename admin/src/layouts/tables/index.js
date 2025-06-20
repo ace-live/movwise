@@ -15,6 +15,8 @@ function Tables({
   totalPages = 1,
   handlePaginationTrigger = () => {},
   handleSearchTextChange = () => {},
+  dropdownFilter = null,
+  handleDropdownFilterChange = () => {},
 }) {
   return (
     <DashboardLayout>
@@ -50,6 +52,8 @@ function Tables({
                   totalPages={totalPages}
                   handlePaginationTrigger={handlePaginationTrigger}
                   handleSearchTextChange={handleSearchTextChange}
+                  dropdownFilter={dropdownFilter}
+                  handleDropdownFilterChange={handleDropdownFilterChange}
                 />
               </MDBox>
             </Card>

@@ -11,7 +11,8 @@ import {
   TextField,
   Box,
   Paper,
-  Container,
+  Container,  
+  Alert
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatPanel from '../dispute/chatPanel';
@@ -20,6 +21,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDBox from "../../../components/MDBox";
 import MDTypography from "../../../components/MDTypography";
+import { useState } from "react";
 
 const DisputeDetail = () => {
   const { disputeId } = useParams();
@@ -28,6 +30,7 @@ const DisputeDetail = () => {
   const { data: dispute, loading, error } = useSelector((state) => state.reducerData.dispute);
   const { data: conversations } = useSelector((state) => state.reducerData.conversations);
   const [resolutionNotes, setResolutionNotes] = React.useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     dispatch(fetchDispute(disputeId));
@@ -39,6 +42,11 @@ const DisputeDetail = () => {
   }, [dispatch, disputeId]);
 
   const handleStatusChange = (newStatus) => {
+    if (!resolutionNotes.trim()) {
+    setShowAlert(true);
+    return;
+  }
+  setShowAlert(false);
     dispatch(updateDisputeStatus(disputeId, { 
       status: newStatus, 
       resolution: resolutionNotes 
@@ -46,7 +54,9 @@ const DisputeDetail = () => {
       if (newStatus === 'resolved' || newStatus === 'rejected') {
         navigate('/dispute-management');
       }
+    
     });
+  
   };
 
   if (loading) return <MDTypography>Loading...</MDTypography>;
@@ -133,21 +143,27 @@ const DisputeDetail = () => {
               </Paper>
         </MDBox>
               
-
+              {showAlert && (
+    <Alert severity="warning" sx={{ mb: 2 }}>
+      Please enter resolution notes before resolving or rejecting the dispute.
+    </Alert>
+  )}
               <TextField
                 label="Resolution Notes"
                 multiline
                 rows={4}
                 fullWidth
                 variant="outlined"
-                value={resolutionNotes}
+                required
+                placeholder="Enter resolution notes here..."
+                value={dispute.resolution || resolutionNotes}
                 onChange={(e) => setResolutionNotes(e.target.value)}
                 sx={{ mb: 2 }}
               />
 
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
-                  variant="primary"
+                  variant="outlined"
                   color="info"
                   sx={{ color: 'success.main', borderColor: 'success.main' }}
                   onClick={() => handleStatusChange('resolved')}
@@ -156,7 +172,7 @@ const DisputeDetail = () => {
                   Resolve
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="primary"
                   
                   onClick={() => handleStatusChange('rejected')}
                   disabled={dispute.status !== 'open'}

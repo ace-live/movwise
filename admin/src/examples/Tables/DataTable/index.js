@@ -21,6 +21,8 @@ import MDPagination from "components/MDPagination";
 
 import DataTableHeadCell from "examples/Tables/DataTable/DataTableHeadCell";
 import DataTableBodyCell from "examples/Tables/DataTable/DataTableBodyCell";
+import { Input, InputLabel, Select, MenuItem, FormControl } from "@mui/material";
+import { Form } from "react-router-dom";
 
 function DataTable({
   entriesPerPage,
@@ -35,6 +37,8 @@ function DataTable({
   totalPages = 1,
   handlePaginationTrigger = () => {},
   handleSearchTextChange = () => {},
+  dropdownFilter = null,
+  handleDropdownFilterChange = () => {},
 }) {
   const defaultValue = entriesPerPage.defaultValue ?? 10;
   const entries = entriesPerPage.entries?.map((el) => el.toString()) ?? [
@@ -91,6 +95,7 @@ function DataTable({
   }, [defaultValue, pageSize, setPageSize]);
 
   const [search, setSearch] = useState(globalFilter);
+  const [filterValue, setFilterValue] = useState(dropdownFilter?.defaultValue || '');
 
   const setSortedValue = (column) => {
     if (!isSorted) return false;
@@ -106,7 +111,7 @@ function DataTable({
 
   return (
     <TableContainer sx={{ boxShadow: "none" }}>
-      {entriesPerPage || canSearch ? (
+      {entriesPerPage || canSearch || dropdownFilter ? (
         <MDBox
           display="flex"
           justifyContent="space-between"
@@ -131,6 +136,34 @@ function DataTable({
               <MDTypography variant="caption" color="secondary">
                 &nbsp;&nbsp;entries per page
               </MDTypography>
+            </MDBox>
+          )}
+          {dropdownFilter && (
+            console.log("dropdownFilter", dropdownFilter.label),
+              <MDBox width="12rem" mr={2} >
+                <FormControl fullWidth>
+                  
+              <InputLabel id="status-filter-label">{dropdownFilter.label}</InputLabel>
+              <Select 
+                          labelId="status-filter-label"
+                  value={filterValue}
+                  label={dropdownFilter.label}
+                  // p={2.5}
+                  onChange={({ target }) => {
+                    setFilterValue(target.value);
+                    handleDropdownFilterChange(target.value);
+                        }}
+                  size=""   
+                  fullWidth
+                  sx={{ height: "2.5rem", fontSize: "0.875rem" }}            
+                        >
+                {dropdownFilter.options.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              </FormControl>
             </MDBox>
           )}
           {canSearch && (
@@ -283,6 +316,8 @@ DataTable.defaultProps = {
   noEndBorder: false,
   setPageNo: () => {},
   totalPages: 1,
+  dropdownFilter: null,
+  handleDropdownFilterChange: () => {},
 };
 
 DataTable.propTypes = {
@@ -314,6 +349,17 @@ DataTable.propTypes = {
   pageNo: PropTypes.number.isRequired,
   setPageNo: PropTypes.func.isRequired,
   totalPages: PropTypes.number,
+  dropdownFilter: PropTypes.shape({
+    label: PropTypes.string,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.any.isRequired,
+        label: PropTypes.string.isRequired,
+      })
+    ),
+    defaultValue: PropTypes.any,
+  }),
+  handleDropdownFilterChange: PropTypes.func,
 };
 
 export default DataTable;
