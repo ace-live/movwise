@@ -36,8 +36,11 @@ exports.getQuotesByUser = async (req, res) => {
 }
 
 exports.getQuoteDetails = async (req, res) => {
-    const { quote_id } = req.body;
+    const { quote_id, user_id } = req.body;
     try {
+        if(req.user.user_id != user_id) {
+            return res.status(403).json({ error: 'Unauthorised to view the quote' });
+        }
         const result = await pool.query(
             'SELECT quote_requests.id, quote_requests.requester_id, quote_requests.conveyancer_id, quote_requests.property_ref_id, quote_requests.message, quote_requests.status, property_details.property_ref_id, property_details.response FROM quote_requests INNER JOIN property_details ON quote_requests.property_ref_id = property_details.property_ref_id WHERE quote_requests.id = $1',
             [quote_id]
@@ -46,6 +49,7 @@ exports.getQuoteDetails = async (req, res) => {
             return res.status(404).json({ error: 'Quote not found' });
         }
         const row = result.rows[0];
+        row.user = req.user;
         row.response = JSON.parse(row.response);
         res.status(200).json({ quote_details: row });
     } catch (err) {
