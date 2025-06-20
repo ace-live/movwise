@@ -8,7 +8,7 @@ router.post('/login', login);
 router.post('/adminlogin', adminlogin);
 router.post('/updateuserstatus', updateUserStatus);
 router.post('/verifyotp', verifyOtpStatus)
-router.post('/getuserdata', authenticateToken, getUserData); // Get user data
+router.get('/getuserdata', authenticateToken, getUserData); // Get user data
 
 
 module.exports = router;
