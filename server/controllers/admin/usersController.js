@@ -5,7 +5,9 @@ const bcrypt = require('bcryptjs');
 exports.getUsers = async (req, res) => {
   try {
     let { page, limit, filter } = req.query;
-
+    if (parseInt(req.user.role) !== 1) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
     page = parseInt(page);
     limit = parseInt(limit);
     page = isNaN(page) || page < 1 ? 1 : page;
@@ -54,6 +56,9 @@ exports.getUsers = async (req, res) => {
 // Get a specific user by ID
 exports.getUserById = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
     if (result.rows.length === 0) {
@@ -67,6 +72,9 @@ exports.getUserById = async (req, res) => {
 
 // Create a new user
 exports.createUser = async (req, res) => {
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { name, email, phone, password, status, status_desc, is_buyer, is_seller, is_remortgage, is_guest, is_otp_verified, is_subscribed } = req.body;
 
   try {
@@ -83,9 +91,12 @@ exports.createUser = async (req, res) => {
 
 // Update user details
 exports.updateUser = async (req, res) => {
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { id } = req.params;
   const { name, email, phone, status, status_desc } = req.body;
-  
+
 
   try {
     // const existingUserResult = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
@@ -106,6 +117,9 @@ exports.updateUser = async (req, res) => {
 
 // Delete user
 exports.deleteUser = async (req, res) => {
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { id } = req.params;
   try {
     const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
@@ -122,6 +136,9 @@ exports.deleteUser = async (req, res) => {
 
 // Alter user status (active/inactive)
 exports.alterUserStatus = async (req, res) => {
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { id } = req.params;
   const { status, status_desc } = req.body;
 
@@ -140,6 +157,9 @@ exports.alterUserStatus = async (req, res) => {
 
 // Update user roles (buyer, seller, remortgage, etc.)
 exports.updateUserRoles = async (req, res) => {
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { id } = req.params;
   const { is_buyer, is_seller, is_remortgage, is_guest } = req.body;
 
