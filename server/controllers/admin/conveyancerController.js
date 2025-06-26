@@ -4,6 +4,9 @@ const pool = require('../../config/db');
 exports.getConveyancers = async (req, res) => {
   try {
     let { is_verified, name, email, filter, page, limit } = req.query;
+    if (parseInt(req.user.role) !== 1) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
     let query = 'SELECT id,name,email,phone,status,status_desc FROM conveyancers WHERE 1=1';
     let queryParams = [];
 
@@ -71,6 +74,9 @@ exports.getConveyancers = async (req, res) => {
 // Get a specific conveyancer by ID
 exports.getConveyancerById = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query(
       'SELECT * FROM conveyancers WHERE id = $1',
@@ -88,6 +94,9 @@ exports.getConveyancerById = async (req, res) => {
 // Approve a conveyancer profile
 exports.approveConveyancer = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const adminId = req.adminId || 1; // Replace with your auth middleware in production
 
   try {
@@ -117,6 +126,9 @@ exports.approveConveyancer = async (req, res) => {
 // Soft delete a conveyancer profile (mark as not verified)
 exports.softDeleteConveyancer = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query(
       `UPDATE conveyancers
@@ -140,8 +152,11 @@ exports.softDeleteConveyancer = async (req, res) => {
 
 exports.alterConveyancerStatus = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { status, status_desc } = req.body;
-  
+
   try {
     const result = await pool.query(
       'UPDATE users SET status = $1, status_desc = $2 WHERE user_id = $3 RETURNING user_id, status, status_desc',
@@ -154,7 +169,7 @@ exports.alterConveyancerStatus = async (req, res) => {
 
     res.status(200).json({
       message: `User status updated to ${status ? 'active' : 'inactive'}`,
-      user: result.rows[0] 
+      user: result.rows[0]
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

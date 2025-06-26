@@ -2,8 +2,11 @@ const pool = require('../../config/db');
 
 // Get all disputes
 exports.getDisputes = async (req, res) => {
-    try {
+  try {
     let { status, requester_id, conveyancer_id, property_ref_id, page, limit, filter } = req.query;
+    if (parseInt(req.user.role) !== 1) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
 
     let baseQuery = `
     FROM disputes
@@ -77,6 +80,9 @@ exports.getDisputes = async (req, res) => {
 // Get a specific dispute by ID
 exports.getDisputeById = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query('SELECT * FROM disputes WHERE id = $1', [id]);
     if (result.rows.length === 0) {
@@ -91,6 +97,9 @@ exports.getDisputeById = async (req, res) => {
 // Create a new dispute
 exports.createDispute = async (req, res) => {
   const { requester_id, conveyancer_id, property_ref_id, description } = req.body;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query(
       'INSERT INTO disputes (requester_id, conveyancer_id, property_ref_id, description) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -105,6 +114,9 @@ exports.createDispute = async (req, res) => {
 // Update dispute status (resolve, reject, in review)
 exports.updateDisputeStatus = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   const { status, resolution } = req.body;
 
   try {
@@ -126,6 +138,9 @@ exports.updateDisputeStatus = async (req, res) => {
 // Add a conversation between admin and dispute raiser
 exports.addConversation = async (req, res) => {
   const { dispute_id, sender_id, receiver_id, message } = req.body;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query(
       'INSERT INTO dispute_conversations (dispute_id, sender_id, receiver_id, message) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -140,6 +155,9 @@ exports.addConversation = async (req, res) => {
 // Get all conversations for a dispute
 exports.getDisputeConversations = async (req, res) => {
   const { dispute_id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query(
       'SELECT * FROM dispute_conversations WHERE dispute_id = $1 ORDER BY sent_at ASC',
@@ -154,6 +172,9 @@ exports.getDisputeConversations = async (req, res) => {
 // Delete a dispute (hard delete)
 exports.deleteDispute = async (req, res) => {
   const { id } = req.params;
+  if (parseInt(req.user.role) !== 1) {
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
   try {
     const result = await pool.query('DELETE FROM disputes WHERE id = $1 RETURNING *', [id]);
     if (result.rows.length === 0) {
