@@ -1,0 +1,130 @@
+@font-face {
+    font-family: 'Big Caslon FB';
+    src: url('BigCaslonFB-BlackItalic.eot');
+    src: local('Big Caslon FB Black Italic'), local('BigCaslonFB-BlackItalic'),
+        url('BigCaslonFB-BlackItalic.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslonFB-BlackItalic.woff2') format('woff2'),
+        url('BigCaslonFB-BlackItalic.woff') format('woff'),
+        url('BigCaslonFB-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Big Caslon FB';
+    src: url('BigCaslonFB-Bold.eot');
+    src: local('Big Caslon FB Bold'), local('BigCaslonFB-Bold'),
+        url('BigCaslonFB-Bold.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslonFB-Bold.woff2') format('woff2'),
+        url('BigCaslonFB-Bold.woff') format('woff'),
+        url('BigCaslonFB-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BigCaslon Expert';
+    src: url('BigCaslon-Expert.eot');
+    src: local('BigCaslon Expert'), local('BigCaslon-Expert'),
+        url('BigCaslon-Expert.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslon-Expert.woff2') format('woff2'),
+        url('BigCaslon-Expert.woff') format('woff'),
+        url('BigCaslon-Expert.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Big Caslon FB';
+    src: url('BigCaslonFB-Regular.eot');
+    src: local('Big Caslon FB Regular'), local('BigCaslonFB-Regular'),
+        url('BigCaslonFB-Regular.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslonFB-Regular.woff2') format('woff2'),
+        url('BigCaslonFB-Regular.woff') format('woff'),
+        url('BigCaslonFB-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Big Caslon FB';
+    src: url('BigCaslonFB-Black.eot');
+    src: local('Big Caslon FB Black'), local('BigCaslonFB-Black'),
+        url('BigCaslonFB-Black.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslonFB-Black.woff2') format('woff2'),
+        url('BigCaslonFB-Black.woff') format('woff'),
+        url('BigCaslonFB-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Big Caslon FB';
+    src: url('BigCaslonFB-Italic.eot');
+    src: local('Big Caslon FB Italic'), local('BigCaslonFB-Italic'),
+        url('BigCaslonFB-Italic.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslonFB-Italic.woff2') format('woff2'),
+        url('BigCaslonFB-Italic.woff') format('woff'),
+        url('BigCaslonFB-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BigCaslon Alternatives';
+    src: url('BigCaslon-Alternatives.eot');
+    src: local('BigCaslon Alternatives'), local('BigCaslon-Alternatives'),
+        url('BigCaslon-Alternatives.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslon-Alternatives.woff2') format('woff2'),
+        url('BigCaslon-Alternatives.woff') format('woff'),
+        url('BigCaslon-Alternatives.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BigCaslon SmallCaps';
+    src: url('BigCaslon-SmallCaps.eot');
+    src: local('BigCaslon SmallCaps'), local('BigCaslon-SmallCaps'),
+        url('BigCaslon-SmallCaps.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslon-SmallCaps.woff2') format('woff2'),
+        url('BigCaslon-SmallCaps.woff') format('woff'),
+        url('BigCaslon-SmallCaps.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Big Caslon FB';
+    src: url('BigCaslonFB-BoldItalic.eot');
+    src: local('Big Caslon FB Bold Italic'), local('BigCaslonFB-BoldItalic'),
+        url('BigCaslonFB-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslonFB-BoldItalic.woff2') format('woff2'),
+        url('BigCaslonFB-BoldItalic.woff') format('woff'),
+        url('BigCaslonFB-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BigCaslon ItalicSwash';
+    src: url('BigCaslon-ItalicSwash.eot');
+    src: local('BigCaslon Italic Swash'), local('BigCaslon-ItalicSwash'),
+        url('BigCaslon-ItalicSwash.eot?#iefix') format('embedded-opentype'),
+        url('BigCaslon-ItalicSwash.woff2') format('woff2'),
+        url('BigCaslon-ItalicSwash.woff') format('woff'),
+        url('BigCaslon-ItalicSwash.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
